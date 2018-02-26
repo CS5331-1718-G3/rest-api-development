@@ -15,6 +15,7 @@ router.get('/', function(req, res, next) {
 // Attach routes.
 router.use('/meta', require('./meta'));
 router.use('/users', require('./users'));
+router.use('/diary', require('./diary'));
 
 // Internal routes for testing.
 router.use('/internal', require('./internal'));
