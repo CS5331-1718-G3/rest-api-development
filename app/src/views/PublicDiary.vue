@@ -4,15 +4,16 @@
     <h5 class="subtitle is-h5">View other users' diary entries that are public here.</h5>
     <hr>
 
-    <article class="message is-danger" v-if="this.errors.length">
-      <div class="message-header">Error</div>
-      <div class="message-body content">
-        <p v-for="(error, index) in errors" :key="index">{{ error }}</p>
-      </div>
-    </article>
-
     <div class="columns">
       <div class="column is-8 is-offset-2">
+
+        <article class="message is-danger" v-if="this.errors.length">
+          <div class="message-header">Error</div>
+          <div class="message-body content">
+            <p v-for="(error, index) in errors" :key="index">{{ error }}</p>
+          </div>
+        </article>
+
         <div class="card diary-entry" v-for="entry in entries" :key="entry.id">
           <header class="card-header">
             <p class="card-header-title">
