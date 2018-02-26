@@ -42,12 +42,18 @@
 
           <div class="navbar-end">
             <div class="navbar-item">
-              <router-link class="button is-primary" to="/login">
+              <router-link class="button is-primary" to="/login" v-if="!isLoggedIn">
                 <span class="icon">
                   <font-awesome-icon icon="sign-in-alt" />
                 </span>
                 <span>Login</span>
               </router-link>
+              <a class="button is-warning" @click.prevent="logout" v-else>
+                <span class="icon">
+                  <font-awesome-icon icon="sign-out-alt" />
+                </span>
+                <span>Logout</span>
+              </a>
             </div>
           </div>
         </div>
@@ -80,6 +86,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
 export default {
@@ -117,6 +124,9 @@ export default {
   components: {
     FontAwesomeIcon,
   },
+
+  computed: mapState(['isLoggedIn']),
+  methods: mapActions(['logout']),
 };
 </script>
 

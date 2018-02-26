@@ -1,23 +1,24 @@
-import { SET_USER, UNSET_USER } from '../mutationTypes';
+import { SET_USER_PROFILE, UNSET_USER_PROFILE } from '../mutationTypes';
 import { deleteUserToken, getUserToken, setUserToken } from '../../../utils/session';
 
 import { post } from '../../../utils/restClient';
 
 const initialState = {
-  user: null,
+  profile: null,
 };
 
 const getters = {
-  user: state => state.user,
+  profile: state => state.profile,
+  isLoggedIn: state => state.profile !== null,
 };
 
 const mutations = {
-  [SET_USER](state, user) {
-    state.user = user;
+  [SET_USER_PROFILE](state, user) {
+    state.profile = user;
   },
 
-  [UNSET_USER](state) {
-    state.user = null;
+  [UNSET_USER_PROFILE](state) {
+    state.profile = null;
   },
 };
 
@@ -27,21 +28,21 @@ const actions = {
 
     // Fail if there is no token.
     if (!token) {
-      commit(UNSET_USER);
+      commit(UNSET_USER_PROFILE);
       return null;
     }
 
     // Retrieve user information.
-    let user;
-
     try {
-      ({ status: _, ...user } = await post('/users', { token }));
-      commit(SET_USER, user);
+      const { status, ...user } = await post('/users', { token });
+      commit(SET_USER_PROFILE, user);
+
+      return user;
     } catch (e) {
+      // Log out if the token is invalid.
+      commit(UNSET_USER_PROFILE);
       return null;
     }
-
-    return user;
   },
 
   async login({ commit, state }, username, password) {
@@ -58,7 +59,7 @@ const actions = {
 
     // Just unset the Vuex state if there is no token.
     if (!token) {
-      commit(UNSET_USER);
+      commit(UNSET_USER_PROFILE);
       return true;
     }
 
@@ -66,7 +67,7 @@ const actions = {
       // Even if there is no such token, log out anyway.
       await post('/users/expire', { token }).status;
       deleteUserToken();
-      commit(UNSET_USER);
+      commit(UNSET_USER_PROFILE);
     } catch (e) {
       return false;
     }
