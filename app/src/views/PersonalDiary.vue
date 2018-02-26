@@ -52,6 +52,7 @@
 <script>
 import { post } from '../utils/restClient';
 import moment from 'moment';
+import store from '../lib/vuex';
 import { getUserToken } from '../utils/session';
 
 export default {
@@ -102,6 +103,12 @@ export default {
 
       this.successMessage = 'Successfully changed permissions of diary entry.';
     },
+  },
+
+  beforeRouteEnter(to, from, next) {
+    // Redirect back to home page if not logged in.
+    if (!store.getters.isLoggedIn) next('/');
+    else next();
   },
 };
 </script>

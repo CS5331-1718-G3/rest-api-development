@@ -36,6 +36,11 @@ const router = new Router({
           name: 'personal-diary',
           component: require('./views/PersonalDiary').default,
         },
+        {
+          path: '/diary/new',
+          name: 'diary-new',
+          component: require('./views/DiaryNew').default,
+        },
       ],
     },
   ],
