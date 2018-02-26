@@ -134,7 +134,9 @@ export default {
 
 <style lang="scss">
 #app-shell {
-  height: 100%;
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 8rem;
 }
 
 footer.footer {
