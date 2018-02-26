@@ -3,6 +3,7 @@
 set -e
 
 export NODE_ENV=${NODE_ENV:-"production"}
+export PORT=8080
 
 cd /var/www/api
 echo "Initializing API server"
