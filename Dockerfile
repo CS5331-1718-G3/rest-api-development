@@ -33,11 +33,10 @@ RUN echo "$user     hard    nproc       20" >> /etc/security/limits.conf
 COPY ./service /service
 
 # Expose ports.
-EXPOSE 80
-EXPOSE 8080
+EXPOSE 80 8080
 
 # Expose volume mount points.
-VOLUME ["${MYSQL_DATA_DIR}", "${MYSQL_RUN_DIR}", "/var/www/app", "/var/www/api", "/docs"]
+VOLUME ["${MYSQL_DATA_DIR}", "${MYSQL_RUN_DIR}", "/var/www/app", "/var/www/api"]
 
 # Entrypoint.
 ENTRYPOINT ["/bin/bash", "/service/start_services.sh"]
