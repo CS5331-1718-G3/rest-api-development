@@ -26,6 +26,11 @@ const router = new Router({
           name: 'register',
           component: require('./views/Register').default,
         },
+        {
+          path: '/diary/public',
+          name: 'public-diary',
+          component: require('./views/PublicDiary').default,
+        },
       ],
     },
   ],
