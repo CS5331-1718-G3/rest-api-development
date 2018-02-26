@@ -1,10 +1,13 @@
 const mung = require('express-mung');
 
-const transformer = function(json, res) {
-  return {
-    status: true,
-    result: json,
-  };
+const transformer = function(json) {
+  const body = { status: true };
+
+  if (json) {
+    body.result = json;
+  }
+
+  return body;
 };
 
 module.exports = function() {
