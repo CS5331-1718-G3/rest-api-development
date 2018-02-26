@@ -1,4 +1,4 @@
-import { FETCH_USER, LOGIN, LOGOUT } from '../actionTypes';
+import { FETCH_USER, LOGIN, LOGOUT, REGISTER } from '../actionTypes';
 import { SET_AS_FETCHED, SET_USER_PROFILE, UNSET_USER_PROFILE } from '../mutationTypes';
 import { deleteUserToken, getUserToken, setUserToken } from '../../../utils/session';
 
@@ -54,13 +54,13 @@ const actions = {
     }
   },
 
-  async [LOGIN]({ commit, state, dispatch }, { username, password }) {
+  async [LOGIN]({ commit, state, dispatch }, data) {
     let token;
 
     try {
       // Get and save token.
       // Don't fetch the new user profile automatically.
-      token = (await post('/users/authenticate', { username, password })).token;
+      token = (await post('/users/authenticate', data)).token;
       setUserToken(token);
     } catch (e) {
       deleteUserToken();
@@ -83,11 +83,21 @@ const actions = {
 
     try {
       // Even if there is no such token, log out anyway.
-      await post('/users/expire', { token }).status;
+      await post('/users/expire', { token });
       deleteUserToken();
       commit(UNSET_USER_PROFILE);
     } catch (e) {
       return false;
+    }
+
+    return true;
+  },
+
+  async [REGISTER]({ commit, state }, data) {
+    try {
+      await post('/users/register', data);
+    } catch (e) {
+      throw e;
     }
 
     return true;

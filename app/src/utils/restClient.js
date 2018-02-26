@@ -69,5 +69,5 @@ const makeGetStatusHandler = url => response => {
 };
 
 const makeErrHandler = url => err => {
-  throw new Error(`Error while fetching ${url}: ${err.message}`);
+  throw new Error(err.message);
 };

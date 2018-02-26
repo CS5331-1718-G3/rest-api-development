@@ -21,6 +21,11 @@ const router = new Router({
           name: 'login',
           component: require('./views/Login').default,
         },
+        {
+          path: '/register',
+          name: 'register',
+          component: require('./views/Register').default,
+        },
       ],
     },
   ],

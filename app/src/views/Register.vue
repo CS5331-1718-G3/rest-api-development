@@ -1,17 +1,12 @@
 <template>
   <section class="section">
-    <h3 class="title">Login</h3>
-    <h5 class="subtitle is-size-6">Not a member yet?
-      <router-link to="/register">Register</router-link>
+    <h3 class="title">Register</h3>
+    <h5 class="subtitle is-size-6">Already have an account?
+      <router-link to="/login">Login</router-link>
     </h5>
     <hr>
     <div class="columns">
       <div class="column is-half is-offset-one-quarter">
-
-        <div class="notification is-success" v-if="isRegisterSuccess && !isRegisterNotificationHidden">
-          <button class="button delete" @click.prevent="isRegisterNotificationHidden = true"></button>
-          Successfully registered. You may now log in.
-        </div>
 
         <article class="message is-danger" v-if="this.errors.length">
           <div class="message-header">Error</div>
@@ -21,7 +16,7 @@
         </article>
 
         <div class="box">
-          <form @submit.prevent="handleLogin">
+          <form @submit.prevent="handleSubmit">
 
             <div class="field">
               <label class="label">Username</label>
@@ -38,7 +33,21 @@
             </div>
 
             <div class="field">
-              <button class="button is-primary" type="submit">Login</button>
+              <label class="label">Full Name</label>
+              <div class="control">
+                <input type="text" class="input" v-model="fullname">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Age</label>
+              <div class="control">
+                <input type="text" class="input" v-model="age">
+              </div>
+            </div>
+
+            <div class="field">
+              <button class="button is-primary" type="submit">Register</button>
             </div>
 
           </form>
@@ -52,42 +61,35 @@
 import { mapActions } from 'vuex';
 import router from 'vue-router';
 import store from '../lib/vuex';
-import { LOGIN, FETCH_USER } from '../lib/vuex/actionTypes';
+import { REGISTER } from '../lib/vuex/actionTypes';
 
 export default {
   data: () => ({
     username: '',
     password: '',
+    fullname: '',
+    age: '',
     errors: [],
-    isRegisterNotificationHidden: false,
   }),
-
-  computed: {
-    isRegisterSuccess() {
-      return 'register' in this.$route.query;
-    },
-  },
 
   methods: {
     ...mapActions({
-      login: LOGIN,
-      fetchUser: FETCH_USER,
+      register: REGISTER,
     }),
 
-    async handleLogin() {
+    async handleSubmit() {
       this.errors = [];
 
       // Log in and get token.
       try {
-        await this.login({ username: this.username, password: this.password });
-        await this.fetchUser();
+        await this.register({ username: this.username, password: this.password, fullname: this.fullname, age: this.age });
       } catch (e) {
-        this.errors.push('Invalid username/password.');
+        this.errors.push(e.message);
         return;
       }
 
       // Redirect back to home page.
-      this.$router.push('/');
+      this.$router.push('/login?register');
     },
   },
 
