@@ -26,15 +26,16 @@ app.use(function(req, res, next) {
 
 // Error handler
 app.use(function(err, req, res, next) {
-  // Set locals, only providing error in development.
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  const body = { status: false };
 
-  // Return error status, default to 500 server error.
+  // Add error message only if provided.
+  if (err.message && err.message.length) {
+    body.error = err.message;
+  }
+
+  // Defaults to 500 Internal Server Error.
   res.status(err.status || 500);
-
-  // Show any errors.
-  res.json(res.locals);
+  res.json(body);
 });
 
 module.exports = app;
