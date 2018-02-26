@@ -19,7 +19,8 @@ export default {
 @import '~bulma/bulma.sass';
 
 html,
-body {
+body,
+#app {
   width: 100%;
   height: 100%;
   margin: 0;

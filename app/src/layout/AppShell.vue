@@ -41,12 +41,14 @@
           </div>
 
           <div class="navbar-end">
-            <a href="https://github.com/CS5331-1718-G3/rest-api-development" class="navbar-item">
-              <span class="icon">
-                <font-awesome-icon :icon="['fab','github']" />
-              </span>
-              <span>View on GitHub</span>
-            </a>
+            <div class="navbar-item">
+              <router-link class="button is-primary" to="/login">
+                <span class="icon">
+                  <font-awesome-icon icon="sign-in-alt" />
+                </span>
+                <span>Login</span>
+              </router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -57,6 +59,23 @@
         <router-view></router-view>
       </div>
     </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="content has-text-centered">
+          <p class="is-size-7">
+            Submission for CS5331: Web Security Assignment 1, AY 17/18 Semester 2.
+            <br> &copy; CS5331 Group 3 (Alwinson Au-Yong, Irvin Lim, Joel Tan, Teng Yong Hao) 2018.
+          </p>
+          <p class="is-size-7">
+            <a href="https://github.com/CS5331-1718-G3/rest-api-development" target="_blank">
+              <font-awesome-icon :icon="['fab','github']" />
+              <span>View on GitHub</span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -73,10 +92,23 @@ export default {
         label: 'Home',
       },
       {
+        url: '/diary/public',
+        label: 'Public Diary',
+      },
+      {
         submenu: true,
-        label: 'Meta',
+        label: 'Personal Diary',
         url: '',
-        items: [{ url: '/meta/members', label: 'Members' }],
+        items: [
+          {
+            url: '/diary/personal',
+            label: 'Diary Entries',
+          },
+          {
+            url: '/diary/new',
+            label: 'Create New',
+          },
+        ],
       },
     ],
     isMenuVisible: false,
@@ -87,3 +119,18 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+#app-shell {
+  height: 100%;
+}
+
+footer.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 1.5rem;
+}
+</style>
+
