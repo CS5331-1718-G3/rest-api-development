@@ -51,7 +51,7 @@ export default {
     }
 
     try {
-      this.members = await get('/meta/members');
+      this.members = (await get('/meta/members')).result;
     } catch (e) {
       this.errors.push(e.message);
     }

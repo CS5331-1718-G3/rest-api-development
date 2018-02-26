@@ -18,8 +18,10 @@
     "bulma": "^0.6.2",
     "http-server": "^0.11.1",
     "vue": "^2.5.11",
+    "vue-cookie": "^1.1.4",
     "vue-router": "^3.0.1",
-    "vue-toasted": "^1.1.24"
+    "vue-toasted": "^1.1.24",
+    "vuex": "^3.0.1"
   },
   "browserslist": [
     "> 1%",
