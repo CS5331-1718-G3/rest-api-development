@@ -9,16 +9,6 @@ import { mapActions } from 'vuex';
 
 export default {
   name: 'app',
-
-  async mounted() {
-    try {
-      await this.fetchUser();
-    } catch (e) {}
-  },
-
-  methods: {
-    ...mapActions(['fetchUser']),
-  },
 };
 </script>
 

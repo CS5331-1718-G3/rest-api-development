@@ -1,15 +1,17 @@
-import { SET_USER_PROFILE, UNSET_USER_PROFILE } from '../mutationTypes';
+import { FETCH_USER, LOGIN, LOGOUT } from '../actionTypes';
+import { SET_AS_FETCHED, SET_USER_PROFILE, UNSET_USER_PROFILE } from '../mutationTypes';
 import { deleteUserToken, getUserToken, setUserToken } from '../../../utils/session';
 
+import { IS_LOGGED_IN } from '../getterTypes';
 import { post } from '../../../utils/restClient';
 
 const initialState = {
   profile: null,
+  fetched: false,
 };
 
 const getters = {
-  profile: state => state.profile,
-  isLoggedIn: state => state.profile != null,
+  [IS_LOGGED_IN]: state => state.profile != null,
 };
 
 const mutations = {
@@ -20,11 +22,18 @@ const mutations = {
   [UNSET_USER_PROFILE](state) {
     state.profile = null;
   },
+
+  [SET_AS_FETCHED](state) {
+    state.fetched = true;
+  },
 };
 
 const actions = {
-  async fetchUser({ commit, state }) {
+  async [FETCH_USER]({ commit, state }) {
     const token = getUserToken();
+
+    // Mark the state as fetched previously.
+    commit(SET_AS_FETCHED);
 
     // Fail if there is no token.
     if (!token) {
@@ -45,7 +54,7 @@ const actions = {
     }
   },
 
-  async login({ commit, state, dispatch }, { username, password }) {
+  async [LOGIN]({ commit, state, dispatch }, { username, password }) {
     let token;
 
     try {
@@ -63,7 +72,7 @@ const actions = {
     return true;
   },
 
-  async logout({ commit, state }) {
+  async [LOGOUT]({ commit, state }) {
     const token = getUserToken();
 
     // Just unset the Vuex state if there is no token.

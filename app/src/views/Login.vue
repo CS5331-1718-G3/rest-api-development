@@ -46,6 +46,8 @@
 <script>
 import { mapActions } from 'vuex';
 import router from 'vue-router';
+import store from '../lib/vuex';
+import { LOGIN, FETCH_USER } from '../lib/vuex/actionTypes';
 
 export default {
   data: () => ({
@@ -55,7 +57,11 @@ export default {
   }),
 
   methods: {
-    ...mapActions(['login', 'fetchUser']),
+    ...mapActions({
+      login: LOGIN,
+      fetchUser: FETCH_USER,
+    }),
+
     async handleLogin() {
       this.errors = [];
 
@@ -71,6 +77,12 @@ export default {
       // Redirect back to home page.
       this.$router.push('/');
     },
+  },
+
+  beforeRouteEnter(to, from, next) {
+    // Redirect back to home page if already logged in.
+    if (store.getters.isLoggedIn) next('/');
+    else next();
   },
 };
 </script>

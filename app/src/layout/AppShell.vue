@@ -87,6 +87,8 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { IS_LOGGED_IN } from '../lib/vuex/getterTypes';
+import { LOGOUT } from '../lib/vuex/actionTypes';
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome';
 
 export default {
@@ -125,8 +127,8 @@ export default {
     FontAwesomeIcon,
   },
 
-  computed: mapGetters(['isLoggedIn']),
-  methods: mapActions(['logout']),
+  computed: mapGetters({ isLoggedIn: IS_LOGGED_IN }),
+  methods: mapActions({ logout: LOGOUT }),
 };
 </script>
 
