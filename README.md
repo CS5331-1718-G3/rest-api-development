@@ -1,143 +1,87 @@
-# rest-api-development
+# CS5331 Assignment 1 Project: REST API Development
 
-CS5331 Assignment 1 Project Reference Repository
+CS5331 Assignment 1 Project
 
-## Instructions
+## Team Members
 
-Your objective is to implement a web application that provides the endpoints
-specified here: https://cs5331-assignments.github.io/rest-api-development/.
-
-The project has been packaged in an easy to set-up docker container with the
-skeleton code implemented in Python Flask. You are not restricted in terms of
-which language, web stack, or database you desire to use. However, please note
-that very limited support can be given to those who decide to veer off the
-beaten path.
-
-You may be required to modify the following files/directories:
-
-- Dockerfile - contains the environment setup scripts to ensure a homogenous
-  development environment
-- src/ - contains the front-end code in `html` and the skeleton Flask API code
-  in `service`
-- img/ - contains images used for this README
-
-Assuming you're developing on an Ubuntu 16.04 machine, the quick instructions
-to get up and running are:
-
-```
-# Install Docker
-
-sudo apt-get update
-sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-sudo apt-get update
-sudo apt-get install docker-ce
-
-# Verify Docker Works
-
-sudo docker run hello-world
-
-# Run the skeleton implementation
-
-sudo ./run.sh
-```
-
-(Docker CE installation instructions are from this
-[link](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository).)
-
-**Please consult your assignment hand-out for detailed setup information.**
-
-## Grading
-
-The implementation will be graded in an automated fashion on an Ubuntu 16.04
-virtual machine by building the docker container found in your repository and
-running it. The grading script will interact with your API.
-
-The following ports are expected to be accessible:
-
-1. 80, on which static HTML content, including the front-end, is served.
-2. 8080, on which the API is exposed.
-
-To verify this, please run the following commands:
-
-```
-sudo ./run.sh
-```
-
-On a different window:
-
-```
-curl http://localhost:80
-curl http://localhost:8080
-```
-
-If a response is received, you're good to go.
-
-**Please replace the details below with information relevant to your team.**
+1. Au-yong Xiang Rong Alwinson
+2. Irvin Lim Wei Quan
+3. Tan Ngee Joel Jonas
+4. Teng Yong Hao
 
 ## Screenshots
 
-Please replace the example screenshots with screenshots of your completed
-project. Feel free to include more than one.
+![Home Page](./img/screen1.png)
+![Login Page](./img/screen2.png)
+![Diary Entries Page](./img/screen3.png)
+![New Diary Entry Page](./img/screen4.png)
 
-![Sample Screenshot](./img/samplescreenshot.png)
+## Short Answer Questions
 
-## Administration and Evaluation
+### Question 1: Briefly describe the web technology stack used in your implementation.
 
-Please fill out this section with details relevant to your team.
+#### Frontend
 
-### Team Members
+* [_Vue.js_](https://vuejs.org): JavaScript view library for fast prototyping and performance
+* [_SCSS_](https://sass-lang.com/): CSS preprocessor
+* [_Webpack_](https://webpack.js.org/): Module bundler and development server for hot module reloading
+* [_Babel_](https://babeljs.io/): JavaScript transpiler
 
-1. Member 1 Name
-2. Member 2 Name
-3. Member 3 Name
-4. Member 4 Name
+#### REST API
 
-### Short Answer Questions
+* [_Express_](https://expressjs.com/): Web framework popular for REST APIs in Node.js
+* [_MySQL_](https://www.mysql.com/): Database server
 
-#### Question 1: Briefly describe the web technology stack used in your implementation.
+#### Development and deployment
 
-Answer: Please replace this sentence with your answer.
+* [_Docker_](https://www.docker.com/): Containerization platform for reproducible and quick builds
 
-#### Question 2: Are there any security considerations your team thought about?
-
-Answer: Please replace this sentence with your answer.
-
-#### Question 3: Are there any improvements you would make to the API specification to improve the security of the web application?
-
-Answer: Please replace this sentence with your answer.
-
-#### Question 4: Are there any additional features you would like to highlight?
+### Question 2: Are there any security considerations your team thought about?
 
 Answer: Please replace this sentence with your answer.
 
-#### Question 5: Is your web application vulnerable? If yes, how and why? If not, what measures did you take to secure it?
+### Question 3: Are there any improvements you would make to the API specification to improve the security of the web application?
 
 Answer: Please replace this sentence with your answer.
 
-#### Feedback: Is there any other feedback you would like to give?
+### Question 4: Are there any additional features you would like to highlight?
+
+#### Proxying of API server
+
+Due to the Same-Origin policy, most modern browsers do not allow `XMLHttpRequest`s to be made across different origins (i.e. combination of protocol, domain and port number) unless Cross-Origin Resource Sharing (CORS) is explicitly allowed by the cross-origin server that is serving the remote resource.
+
+The reason for this is to prevent unauthorised requests being made on behalf of an unsuspecting user to another website, which would then be able to either extract cookies/session data, or utilise these session data to perform actions on their behalf (e.g. banking sites).
+
+The immediate implication for the frontend application, since it consumes a REST API via XHR, would be that the Same-Origin Policy would prevent API requests from being made, from `http://localhost:80` to `http://localhost:8080`.
+
+The workaround would be to set up a proxy server running on port `80` that proxies any requests prefixed with `/api` to port `8080`, which does not violate the Same-Origin Policy. This was done using `webpack-dev-server`'s [`proxy` mechanism](https://webpack.js.org/configuration/dev-server/#devserver-proxy).
+
+### Question 5: Is your web application vulnerable? If yes, how and why? If not, what measures did you take to secure it?
 
 Answer: Please replace this sentence with your answer.
 
-### Declaration
+### Feedback: Is there any other feedback you would like to give?
 
-#### Please declare your individual contributions to the assignment:
+The REST API specification has a few oddities that are quite different from the standard REST API conventions:
 
-1. Member 1 Name
-    - Integrated feature x into component y
-    - Implemented z
-2. Member 2 Name
-    - Wrote the front-end code
-3. Member 3 Name
-    - Designed the database schema
-4. Member 4 Name
-    - Implemented x
+* Error status codes should not be `2xx`, but the more traditional `4xx` or `5xx` codes
+* Success status codes are arbitrarily assigned `200` or `201`
+* Not all endpoints return the results in a `result` field
+* Sending authentication token in `POST` body rather than either cookies or `Authorization` header
+* Unable to specify the HTTP method in the endpoint to list all endpoints (`GET /`), resulting in duplicates between `GET` and `POST` endpoints at the same URL
 
+Also, I would have liked to see Docker Compose being allowed in this assignment, since Docker containers are meant to be of a singular, atomic purpose. This allows each of the containers to start in parallel, especially if there are several long build steps within the container.
+
+Finally, the marks weightage for the UI is rather low at 5%, compared to the REST API at 70%, when it takes up quite a fair amount of time regardless of the frontend stack being used.
+
+## Declaration
+
+### Please declare your individual contributions to the assignment:
+
+1. Au-yong Xiang Rong Alwinson
+2. Irvin Lim Wei Quan
+    * Set up `Dockerfile` and Bash scripts
+    * Wrote the frontend app
+    * Set up the basic structure for the API server
+3. Tan Ngee Joel Jonas
+4. Teng Yong Hao
