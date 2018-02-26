@@ -169,6 +169,7 @@ while ! [[ "$mysqld_process_pid" =~ ^[0-9]+$ ]]; do
   sleep 1
 done
 
+echo 
 echo "MySQL server running."
 echo "=================="
 echo

@@ -16,10 +16,11 @@ echo "Starting web app server..."
 npm run dev &
 
 # Wait until server is running.
-until $(curl --output /dev/null --silent --head --fail http://0.0.0.0:$PORT); do
+until $(curl --output /dev/null --silent --head --fail http://localhost:$PORT); do
     sleep 1
 done
 
-echo "Web app server running at http://0.0.0.0:$PORT"
+echo 
+echo "Web app server running at http://localhost:$PORT"
 echo "=================="
 echo

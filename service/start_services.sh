@@ -13,9 +13,9 @@ bash /service/start_app.sh
 
 echo "All services up and running."
 echo
-echo "MySQL server: 0.0.0.0:3306"
-echo "REST API:     0.0.0.0:8080"
-echo "Web server:   0.0.0.0:80"
+echo "MySQL server: localhost:3306"
+echo "REST API:     localhost:8080"
+echo "Web server:   localhost:80"
 echo
 echo "=================="
 echo
