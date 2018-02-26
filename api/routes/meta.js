@@ -6,4 +6,16 @@ router.get('/heartbeat', function(req, res, next) {
   res.status(200).json();
 });
 
+// GET /meta/members - Retrieve the team member list
+router.get('/members', function(req, res, next) {
+  const members = [
+    'Au-yong Xiang Rong Alwinson',
+    'Irvin Lim Wei Quan',
+    'Tan Ngee Joel Jonas',
+    'Teng Yong Hao',
+  ];
+
+  res.status(200).json(members);
+});
+
 module.exports = router;
