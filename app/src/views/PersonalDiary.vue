@@ -7,9 +7,9 @@
     <div class="columns">
       <div class="column is-8 is-offset-2">
 
-        <div class="notification is-success" v-if="successMessage && !isNotificationHidden">
+        <div class="notification is-success" v-if="successNotification && !isNotificationHidden">
           <button class="button delete" @click.prevent="isNotificationHidden = true"></button>
-          {{ successMessage }}
+          {{ successNotification }}
         </div>
 
         <article class="message is-danger" v-if="this.errors.length">
@@ -63,6 +63,12 @@ export default {
     isNotificationHidden: false,
   }),
 
+  computed: {
+    successNotification() {
+      return this.successMessage || ('saved' in this.$route.query && 'Successfully created new diary entry.');
+    },
+  },
+
   async mounted() {
     try {
       this.entries = (await post('/diary', { token: getUserToken() })).result;
@@ -87,6 +93,7 @@ export default {
         return;
       }
 
+      this.isNotificationHidden = false;
       this.successMessage = 'Successfully deleted diary entry.';
     },
 
@@ -101,6 +108,7 @@ export default {
         return;
       }
 
+      this.isNotificationHidden = false;
       this.successMessage = 'Successfully changed permissions of diary entry.';
     },
   },
