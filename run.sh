@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Add default environment variables.
+export NODE_ENV=${NODE_ENV:-"production"}
+
 if [ "$EUID" -ne 0 ]
 then 
   echo "Please run as root"
@@ -18,7 +21,7 @@ fi
 TEAMID=`echo $MD5 | cut -d' ' -f 1`
 
 # Stop existing container(s)
-CONTAINERS=`docker ps -a -q --filter ancestor=$TEAMID --filter status=running`
+CONTAINERS=`docker ps -a -q --filter ancestor=$TEAMID`
 IFS=$'\n'
 for container in $CONTAINERS
 do
@@ -27,6 +30,14 @@ do
   docker rm $container &> /dev/null
 done
 
-# Build and start the container.
+# Build the image.
 docker build -t $TEAMID .
-docker run -p 80:80 -p 8080:8080 -t $TEAMID
+
+# Start the container.
+docker run \
+  -p 80:80 \
+  -p 8080:8080 \
+  -e NODE_ENV=$NODE_ENV \
+  -v "$(pwd)"/api/:/var/www/api \
+  -v "$(pwd)"/app/:/var/www/app \
+  -t $TEAMID
