@@ -10,8 +10,10 @@ import { mapActions } from 'vuex';
 export default {
   name: 'app',
 
-  mounted() {
-    this.fetchUser();
+  async mounted() {
+    try {
+      await this.fetchUser();
+    } catch (e) {}
   },
 
   methods: {

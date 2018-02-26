@@ -9,7 +9,7 @@ const initialState = {
 
 const getters = {
   profile: state => state.profile,
-  isLoggedIn: state => state.profile !== null,
+  isLoggedIn: state => state.profile != null,
 };
 
 const mutations = {
@@ -29,7 +29,7 @@ const actions = {
     // Fail if there is no token.
     if (!token) {
       commit(UNSET_USER_PROFILE);
-      return null;
+      throw new Error('Invalid user token.');
     }
 
     // Retrieve user information.
@@ -41,17 +41,26 @@ const actions = {
     } catch (e) {
       // Log out if the token is invalid.
       commit(UNSET_USER_PROFILE);
-      return null;
+      throw e;
     }
   },
 
-  async login({ commit, state }, username, password) {
+  async login({ commit, state, dispatch }, { username, password }) {
+    let token;
+
     try {
-      const token = await post('/users/authenticate', { username, password }).token;
+      // Get and save token.
+      // Don't fetch the new user profile automatically.
+      token = (await post('/users/authenticate', { username, password })).token;
       setUserToken(token);
     } catch (e) {
       deleteUserToken();
+
+      // Rethrow if login was unsuccessful.
+      throw e;
     }
+
+    return true;
   },
 
   async logout({ commit, state }) {

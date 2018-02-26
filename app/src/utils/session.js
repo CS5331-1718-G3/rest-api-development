@@ -13,7 +13,7 @@ export const getUserToken = () => {
 };
 
 export const setUserToken = token => {
-  Vue.cookie.set(COOKIE_NAMES.token, { expires: COOKIE_EXPIRY_DAYS, domain: COOKIE_DOMAIN });
+  Vue.cookie.set(COOKIE_NAMES.token, token, { expires: COOKIE_EXPIRY_DAYS, domain: COOKIE_DOMAIN });
 };
 
 export const deleteUserToken = () => {
