@@ -2,21 +2,24 @@
 
 set -e
 
-export NODE_ENV=${NODE_ENV:-"production"}
+export PORT=80
 
 cd /var/www/app
-echo "Initializing web app server"
+echo "Initializing web app server..."
+echo
 
 # Install dependencies.
-if [ NODE_ENV == "development" ]; then npm install; else npm install --production; fi
+npm install
 
 # Start the app server in the background.
 echo "Starting web app server..."
-npm run start &
+npm run dev &
 
 # Wait until server is running.
-until $(curl --output /dev/null --silent --head --fail http://localhost:80); do
+until $(curl --output /dev/null --silent --head --fail http://0.0.0.0:$PORT); do
     sleep 1
 done
 
-echo "Web app server running at http://0.0.0.0:80"
+echo "Web app server running at http://0.0.0.0:$PORT"
+echo "=================="
+echo

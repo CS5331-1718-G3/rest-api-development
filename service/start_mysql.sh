@@ -168,3 +168,7 @@ while ! [[ "$mysqld_process_pid" =~ ^[0-9]+$ ]]; do
   mysqld_process_pid=$(echo "$(ps -C mysqld -o pid=)" | sed -e 's/^ *//g' -e 's/ *$//g')
   sleep 1
 done
+
+echo "MySQL server running."
+echo "=================="
+echo

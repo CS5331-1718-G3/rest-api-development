@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Add default environment variables.
-export NODE_ENV=${NODE_ENV:-"production"}
-
 if [ "$EUID" -ne 0 ]
 then 
   echo "Please run as root"
@@ -37,7 +34,6 @@ docker build -t $TEAMID .
 docker run \
   -p 80:80 \
   -p 8080:8080 \
-  -e NODE_ENV=$NODE_ENV \
   -v "$(pwd)"/api/:/var/www/api \
   -v "$(pwd)"/app/:/var/www/app \
   -t $TEAMID

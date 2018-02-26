@@ -2,9 +2,6 @@
 
 set -e
 
-export NODE_ENV=${NODE_ENV:-"production"}
-echo "Current environment: $NODE_ENV"
-
 # Start MySQL.
 bash /service/start_mysql.sh
 
@@ -13,6 +10,15 @@ bash /service/start_api.sh
 
 # Start the web app server.
 bash /service/start_app.sh
+
+echo "All services up and running."
+echo
+echo "MySQL server: 0.0.0.0:3306"
+echo "REST API:     0.0.0.0:8080"
+echo "Web server:   0.0.0.0:80"
+echo
+echo "=================="
+echo
 
 # Keep Docker container alive.
 touch /service/keepalive
