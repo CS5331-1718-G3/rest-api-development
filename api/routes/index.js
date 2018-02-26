@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
     .map(route => route.path)
     .filter(route => !route.startsWith('/internal'));
 
-  res.status(200).json(routes);
+  res.status(200).json({ status: true, result: routes });
 });
 
 // Attach routes.

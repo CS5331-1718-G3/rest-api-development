@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 
 // GET /meta/heartbeat - Retrieve the server heartbeat
 router.get('/heartbeat', function(req, res, next) {
-  res.status(200).json();
+  res.status(200).json({ status: true });
 });
 
 // GET /meta/members - Retrieve the team member list
@@ -15,7 +15,7 @@ router.get('/members', function(req, res, next) {
     'Teng Yong Hao',
   ];
 
-  res.status(200).json(members);
+  res.status(200).json({ status: true, result: members });
 });
 
 module.exports = router;
