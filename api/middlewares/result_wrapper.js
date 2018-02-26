@@ -1,6 +1,11 @@
 const mung = require('express-mung');
 
-const transformer = function(json) {
+const transformer = function(json, req, res) {
+  // Don't transform errors.
+  if (json && json.error) {
+    return json;
+  }
+
   const body = { status: true };
 
   if (json) {
