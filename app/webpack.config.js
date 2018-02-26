@@ -60,6 +60,13 @@ module.exports = {
     historyApiFallback: true,
     noInfo: true,
     overlay: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        secure: false,
+        pathRewrite: { '^/api': '' },
+      },
+    },
   },
   performance: {
     hints: false,
