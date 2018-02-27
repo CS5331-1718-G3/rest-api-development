@@ -49,7 +49,7 @@ export default {
     }
 
     try {
-      this.members = (await get('/meta/members')).result;
+      this.members = await get('/meta/members');
     } catch (e) {
       this.errors.push(e.message);
     }

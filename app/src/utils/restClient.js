@@ -60,7 +60,7 @@ const makeResHandler = url => response => {
     throw new Error(data.error);
   }
 
-  return data;
+  return data.result;
 };
 
 const makeGetStatusHandler = url => response => {
