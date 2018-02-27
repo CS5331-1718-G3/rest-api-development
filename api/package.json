@@ -6,8 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "npm run dev",
-    "waitdb": "",
+    "start": "npm run waitdb && npm run dev",
+    "waitdb": "node ./bin/waitdb",
     "dev": "nodemon ./bin/www"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "express-validator": "^5.0.2",
     "jade": "~1.11.0",
     "morgan": "~1.9.0",
+    "mysql": "^2.15.0",
     "serve-favicon": "~2.4.5"
   },
   "devDependencies": {
