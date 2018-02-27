@@ -27,12 +27,7 @@ app.use(function(req, res, next) {
 
 // Error handler
 app.use(function(err, req, res, next) {
-  const body = { status: false };
-
-  // Add error message only if provided.
-  if (err.message && err.message.length) {
-    body.error = err.message;
-  }
+  const body = { status: false, error: err.message };
 
   // Defaults to 200 OK.
   res.status(err.status || 200);
