@@ -62,7 +62,7 @@ module.exports = {
     overlay: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: process.env.WDS_PROXY_TARGET || 'http://localhost:8080',
         secure: false,
         pathRewrite: { '^/api': '' },
       },

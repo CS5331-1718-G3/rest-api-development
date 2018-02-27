@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  app:
+    image: node:8
+    user: "node"
+    working_dir: /home/node/app
+    volumes:
+      - ./app:/home/node/app
+    ports:
+      - 80:3000
+    command: bash -c "npm install && npm run dev"
+    depends_on:
+      - api
+    environment:
+      WDS_PORT: 3000
+      WDS_PUBLIC_SOCKET: localhost:80
+      WDS_PROXY_TARGET: http://api:3000
+
+  api:
+    image: node:8
+    user: "node"
+    working_dir: /home/node/app
+    volumes:
+      - ./api:/home/node/app
+    ports:
+      - 8080:3000
+    command: bash -c "npm install && npm run dev"
+    depends_on:
+      - mysql
+    environment:
+      PORT: 3000
+
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: secret-diary
+      MYSQL_USER: secret-diary
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
