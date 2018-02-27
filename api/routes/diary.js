@@ -27,7 +27,7 @@ router.get('/', function(req, res, next) {
     },
   ];
 
-  res.status(200).json({ status: true, result: entries });
+  res.status(200).json(entries);
 });
 
 // POST /diary - Retrieve all entries belonging to an authenticated user
@@ -38,10 +38,7 @@ router.post('/', [check('token').exists()], function(req, res, next) {
   // TODO: Replace this stub method.
   const errors = validationResult(req);
   if (!errors.isEmpty() || token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-    return res.status(200).json({
-      status: false,
-      error: 'Invalid authentication token.',
-    });
+    throw new Error('Invalid authentication token.');
   }
 
   const entries = [
@@ -63,10 +60,7 @@ router.post('/', [check('token').exists()], function(req, res, next) {
     },
   ];
 
-  res.status(200).json({
-    status: true,
-    result: entries,
-  });
+  res.status(200).json(entries);
 });
 
 // POST /diary/create - Create a new diary entry
@@ -85,29 +79,20 @@ router.post(
     // Validate the token.
     // TODO: Replace this stub method.
     if (token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-      return res.status(200).json({
-        status: false,
-        error: 'Invalid authentication token.',
-      });
+      throw new Error('Invalid authentication token.');
     }
 
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({
-        status: false,
-        error: 'Validation failed.',
-      });
+      throw new Error('Validation failed.');
     }
 
     // Add a new diary entry to the database afterwards.
     // TODO: Replace this stub method.
     const id = 2;
 
-    res.status(201).json({
-      status: true,
-      result: id,
-    });
+    res.status(201).json({ id });
   }
 );
 
@@ -126,32 +111,23 @@ router.post(
     // Validate token.
     // TODO: Replace this stub method.
     if (token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-      return res.status(200).json({
-        status: false,
-        error: 'Invalid authentication token.',
-      });
+      throw new Error('Invalid authentication token.');
     }
 
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({
-        status: false,
-        error: 'Validation failed.',
-      });
+      throw new Error('Validation failed.');
     }
 
     // Validate that the diary entry exists and the user has permissions to delete the entry.
     // After that purge the entry from the database.
     // TODO: Replace this stub method.
     if (id !== 2) {
-      return res.status(200).json({
-        status: false,
-        error: 'You are not allowed to perform this action.',
-      });
+      throw new Error('You are not allowed to perform this action.');
     }
 
-    res.status(200).json({ status: true });
+    res.status(200).json();
   }
 );
 
@@ -171,32 +147,23 @@ router.post(
     // Validate token.
     // TODO: Replace this stub method.
     if (token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-      return res.status(200).json({
-        status: false,
-        error: 'Invalid authentication token.',
-      });
+      throw new Error('Invalid authentication token.');
     }
 
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({
-        status: false,
-        error: 'Validation failed.',
-      });
+      throw new Error('Validation failed.');
     }
 
     // Validate that the diary entry exists and the user has permissions to delete the entry.
     // After that modify the permissions of the diary entry.
     // TODO: Replace this stub method.
     if (id !== 2) {
-      return res.status(200).json({
-        status: false,
-        error: 'You are not allowed to perform this action.',
-      });
+      throw new Error('You are not allowed to perform this action.');
     }
 
-    res.status(200).json({ status: true });
+    res.status(200).json();
   }
 );
 
