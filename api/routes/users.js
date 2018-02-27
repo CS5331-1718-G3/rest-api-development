@@ -19,23 +19,17 @@ router.post(
     // Form validation.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({
-        status: false,
-        error: 'Validation failed.',
-      });
+      throw new Error('Validation failed.');
     }
 
     // Check if a user with an existing username already exists,
     // otherwise create the user in the database.
     // TODO: Replace this stub method.
     if (username === 'admin') {
-      return res.status(200).json({
-        status: false,
-        error: 'User already exists!',
-      });
+      throw new Error('User already exists!');
     }
 
-    res.status(201).json({ status: true });
+    res.status(201).json();
   }
 );
 
@@ -49,19 +43,17 @@ router.post(
     // Form validation.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({ status: false });
+      throw new Error('Validation failed.');
     }
 
     // Authenticate a user based on username/password combo.
     // TODO: Replace this stub method.
     if (username !== 'admin' || password !== 'password') {
-      return res.status(200).json({ status: false });
+      throw new Error();
     }
 
-    res.status(200).json({
-      status: true,
-      token: '6bf00d02-dffc-4849-a635-a21b08500d61',
-    });
+    const token = '6bf00d02-dffc-4849-a635-a21b08500d61';
+    res.status(200).json({ token });
   }
 );
 
@@ -72,16 +64,16 @@ router.post('/expire', [check('token').exists()], function(req, res, next) {
   // Form validation.
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(200).json({ status: false });
+    throw new Error('Validation failed.');
   }
 
   // Check if the token is valid and expire it.
   // TODO: Replace this stub method.
   if (token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-    return res.status(200).json({ status: false });
+    throw new Error();
   }
 
-  res.status(200).json({ status: true });
+  res.status(200).json();
 });
 
 // POST /users - Retrieve authenticated user information
@@ -91,20 +83,16 @@ router.post('/', [check('token').exists()], function(req, res, next) {
   // Form validation.
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(200).json({ status: false });
+    throw new Error('Validation failed.');
   }
 
   // Check if the token is valid and fetch user information.
   // TODO: Replace this stub method.
   if (token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-    return res.status(200).json({
-      status: false,
-      error: 'Invalid authentication token.',
-    });
+    throw new Error('Invalid authentication token.');
   }
 
   res.status(200).json({
-    status: true,
     username: 'audrey123talks',
     fullname: 'Audrey Shida',
     age: 14,
