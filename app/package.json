@@ -6,6 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "start": "npm run waitapi && npm run dev",
+    "waitapi": "until `curl --output /dev/null --silent --head --fail ${WDS_PROXY_TARGET:-'http://localhost:8080'}`; do sleep 1; done",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --port ${WDS_PORT:-3000} --host 0.0.0.0 --public=${WDS_PUBLIC_SOCKET:-'localhost:3000'}",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
