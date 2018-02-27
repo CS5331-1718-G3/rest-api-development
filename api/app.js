@@ -34,8 +34,8 @@ app.use(function(err, req, res, next) {
     body.error = err.message;
   }
 
-  // Defaults to 500 Internal Server Error.
-  res.status(err.status || 500);
+  // Defaults to 200 OK.
+  res.status(err.status || 200);
   res.json(body);
 });
 
