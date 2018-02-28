@@ -5,6 +5,10 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
 
+//Set up mongoose
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://mongo/App');
+
 const app = express();
 
 // Set up middlewares.
