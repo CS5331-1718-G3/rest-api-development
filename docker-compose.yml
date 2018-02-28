@@ -1,0 +1,26 @@
+version: '3.5'
+
+services:
+  app:
+    container_name : app
+    restart : always
+    build : . # specify the directory of the Dockerfile
+    ports :
+      - "80:80" #specify ports forwarding
+      - "8080:8080"
+    volumes :
+      - ./api:/var/www/api
+      - ./app:/var/www/app
+    links :
+      - mongo # link this service to the database service
+    depends_on :
+      - mongo
+      
+  mongo: # name of the service
+    container_name : mongo
+    image: mongo # specify image to build container from
+    command : --httpinterface
+    volumes :
+      - ./data:/data/db
+    ports :
+      - "27017:27017"
