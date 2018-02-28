@@ -42,12 +42,10 @@ router.post(
           age: req.body.age
         });
 
-        //possible code smell, should return status in save
         user.save(function (err) {
-          if (err) { console.log(err.stack); }
+          if (err) { console.log(err.stack); return;}
+          return res.status(201).json({ status: true });          
         });
-
-        return res.status(201).json({ status: true });
       }
     });
   }
