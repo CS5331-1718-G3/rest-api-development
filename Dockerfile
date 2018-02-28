@@ -1,10 +1,10 @@
 FROM ubuntu:latest
 
 # Install MySQL.
-ENV MYSQL_USER=mysql \
-    MYSQL_DATA_DIR=/var/lib/mysql \
-    MYSQL_RUN_DIR=/run/mysqld \
-    MYSQL_LOG_DIR=/var/log/mysql
+# ENV MYSQL_USER=mysql \
+#   MYSQL_DATA_DIR=/var/lib/mysql \
+#    MYSQL_RUN_DIR=/run/mysqld \
+#    MYSQL_LOG_DIR=/var/log/mysql
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server && \ 
@@ -36,7 +36,7 @@ COPY ./service /service
 EXPOSE 80 8080
 
 # Expose volume mount points.
-VOLUME ["${MYSQL_DATA_DIR}", "${MYSQL_RUN_DIR}", "/var/www/app", "/var/www/api"]
+# VOLUME ["${MYSQL_DATA_DIR}", "${MYSQL_RUN_DIR}", "/var/www/app", "/var/www/api"]
 
 # Entrypoint.
 ENTRYPOINT ["/bin/bash", "/service/start_services.sh"]

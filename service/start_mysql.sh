@@ -173,3 +173,14 @@ echo
 echo "MySQL server running."
 echo "=================="
 echo
+
+echo "Creating user..."
+mysql -uroot -e "CREATE USER 'user'@'%' IDENTIFIED BY 'password';"
+mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'user'@'%' WITH GRANT OPTION;"
+mysql -uroot -e "FLUSH PRIVILEGES;"	
+
+#echo -n "Creating read-only user"
+#mysql -uroot -e "CREATE USER 'reader'@'%' IDENTIFIED BY 'password';"
+#mysql -uroot -e "GRANT SELECT ON DATABASE.* TO 'tester'@'%';"
+
+

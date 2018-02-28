@@ -34,6 +34,7 @@ docker build -t $TEAMID .
 docker run \
   -p 80:80 \
   -p 8080:8080 \
+  -p 3306:3306 \
   -v "$(pwd)"/api/:/var/www/api \
   -v "$(pwd)"/app/:/var/www/app \
   -t $TEAMID

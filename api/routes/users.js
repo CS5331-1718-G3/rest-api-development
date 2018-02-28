@@ -1,6 +1,7 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator/check');
 const router = express.Router({ mergeParams: true });
+const mongodb = require('../database');
 
 // POST /users/register - Register a new user
 router.post(
@@ -25,17 +26,32 @@ router.post(
       });
     }
 
-    // Check if a user with an existing username already exists,
-    // otherwise create the user in the database.
-    // TODO: Replace this stub method.
-    if (username === 'admin') {
-      return res.status(200).json({
-        status: false,
-        error: 'User already exists!',
-      });
-    }
+    mongodb.connect(async (err) => {
+      if (err) throw err
 
-    res.status(201).json({ status: true });
+      const db = mongodb.getDatabase()
+      const users = db.collection('users')
+
+      // console.log(users.find({username: req.body.username}, {$exists: true}).limit(1).size())
+      
+      try {
+        const exists = await isUserExists(users, req.body.username)
+    
+        if (exists) {
+          return res.status(200).json({
+            status: false,
+            error: 'User already exists!',
+          });
+        } else {
+          users.insertOne(req.body); 
+          return res.status(201).json({ status: true });
+        }        
+      } catch (e) {
+          throw e
+      } finally {
+        mongodb.disconnect() 
+      }
+    })
   }
 );
 
@@ -110,5 +126,26 @@ router.post('/', [check('token').exists()], function(req, res, next) {
     age: 14,
   });
 });
+
+//Utility functions
+
+const isUserExists = async (users, username) => {
+  try {
+      //Not sure why cursor.size() can't work
+      const cursor = await users.find({'username' : username}).toArray()
+      return cursor.length != 0
+  } catch (e) {
+      throw e
+  }
+}
+
+const findUserByUsername = async (users, username) => {
+  try {
+      const results = await users.findOne(username)
+      return results
+  } catch (e) {
+      throw e
+  }
+}
 
 module.exports = router;

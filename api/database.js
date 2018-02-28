@@ -1,14 +1,22 @@
-var mysql = require('mysql');
+const MongoClient = require('mongodb').MongoClient
+const uri = 'mongodb://mongo/' //hostname mongo represents the container name
+let instance
+let database
 
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'user',
-  password : 'password',
-  database : 'mysql'
-});
+const connect = async (callback) => {
+    try {
+        MongoClient.connect(uri, (err, _instance) => {
+          instance = _instance;
+          database = _instance.db('App');
+          return callback(err)
+        })
+    } catch (e) {
+        throw e
+    }
+}
 
-connection.connect(function(err) {
-    if (err) throw err;
-});
+const getDatabase = () => database
 
-module.exports = connection;
+const disconnect = () => instance.close()
+
+module.exports = { connect, getDatabase, disconnect }
