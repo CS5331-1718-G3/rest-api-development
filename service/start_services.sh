@@ -3,7 +3,7 @@
 set -e
 
 # Start MySQL.
-bash /service/start_mysql.sh
+# bash /service/start_mysql.sh
 
 # Start the API server.
 bash /service/start_api.sh

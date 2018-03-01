@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  app:
+    container_name : app
+    restart : always
+    build : .  # specify the directory of the Dockerfile
+    ports : #specify ports forwarding
+      - "80:80" 
+      - "8080:8080"
+    volumes : # mount points
+      - ./api:/var/www/api
+      - ./app:/var/www/app
+    links :
+      - mongo # link this service to the database service
+    depends_on :
+      - mongo
+      
+  mongo : # database
+    container_name : mongo
+    image : mongo
+    volumes :
+      - ./data:/data/db
+    ports :
+      - "27017:27017"
+
+  mongo-express : # mongodb web managment ui
+    container_name : mongo-express
+    image : mongo-express 
+    links : # link this service to the database service
+      - mongo:mongo
+    ports :
+      - "8081:8081"
+    restart : always
+    command : sh -c 'sleep 10 && tini -- node app'
+    

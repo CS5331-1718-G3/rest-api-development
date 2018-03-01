@@ -4,68 +4,42 @@ const express = require('express');
 const { check, validationResult } = require('express-validator/check');
 const router = express.Router({ mergeParams: true });
 
-// GET /diary - Retrieve all public diary entries
-router.get('/', function(req, res, next) {
-  // TODO: Replace this stub method.
-  const entries = [
-    {
-      id: 1,
-      title: 'My First Project',
-      author: 'ashrugged',
-      publish_date: '2018-02-26T13:37:00+00:00',
-      public: true,
-      text:
-        "If you don't know, the thing to do is not to get scared, but to learn.",
-    },
-    {
-      id: 2,
-      title: 'A New Lesson!',
-      author: 'audrey123talks',
-      publish_date: '2018-02-25T13:37:00+00:00',
-      public: true,
-      text: 'Check out my latest video!',
-    },
-  ];
+const User = require('../database/user_model');
+const Diary = require('../database/diary_model');
 
-  res.status(200).json({ status: true, result: entries });
+// GET /diary - Retrieve all public diary entries
+router.get('/', function (req, res, next) {
+  Diary.find({ public: true }, function (err, diaries) {
+    if (err) return console.error(err);
+    res.status(200).json({ status: true, result: diaries });
+  })
 });
 
 // POST /diary - Retrieve all entries belonging to an authenticated user
-router.post('/', [check('token').exists()], function(req, res, next) {
+router.post('/', [check('token').exists()], function (req, res, next) {
   const { token } = req.body;
 
   // Validate the token and retrieve the private diary entries.
-  // TODO: Replace this stub method.
   const errors = validationResult(req);
-  if (!errors.isEmpty() || token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
+  if (!errors.isEmpty()) {
     return res.status(200).json({
       status: false,
       error: 'Invalid authentication token.',
     });
   }
 
-  const entries = [
-    {
-      id: 2,
-      title: 'A New Lesson!',
-      author: 'audrey123talks',
-      publish_date: '2018-02-26T13:37:00+00:00',
-      public: true,
-      text: 'Check out my latest video!',
-    },
-    {
-      id: 3,
-      title: 'No One Can See This Post',
-      author: 'audrey123talks',
-      publish_date: '2018-02-26T13:38:00+00:00',
-      public: false,
-      text: 'It is very secret!',
-    },
-  ];
-
-  res.status(200).json({
-    status: true,
-    result: entries,
+  User.findOne({ token: req.body.token }, function (err, user) {
+    if (user) {
+      Diary.find({ author: user.username }, function (err, diaries) {
+        if (err) return console.error(err);
+        res.status(200).json({ status: true, result: diaries });
+      })
+    } else {
+      return res.status(200).json({
+        status: false,
+        error: 'Invalid authentication token.',
+      });
+    }
   });
 });
 
@@ -78,18 +52,9 @@ router.post(
     check('text').exists(),
     check('public').isBoolean(),
   ],
-  function(req, res, next) {
+  function (req, res, next) {
     // `public` is reserved word in strict mode. Access using `isPublic` instead.
     const { token, title, text, public: isPublic } = req.body;
-
-    // Validate the token.
-    // TODO: Replace this stub method.
-    if (token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-      return res.status(200).json({
-        status: false,
-        error: 'Invalid authentication token.',
-      });
-    }
 
     // Validate the form values.
     const errors = validationResult(req);
@@ -100,16 +65,39 @@ router.post(
       });
     }
 
-    // Add a new diary entry to the database afterwards.
-    // TODO: Replace this stub method.
-    const id = 2;
+    // Validate the token.
+    User.findOne({ token: req.body.token }, function (err, user) {
+      if (user) {
+        // Add a new diary entry to the database afterwards.
+        //const id = 2
 
-    res.status(201).json({
-      status: true,
-      result: id,
+        //Should do better code for auto incr.
+        Diary.count(function(err, id) {
+          var diary = new Diary({
+            'id': id + 1, //count starts from 0
+            title: req.body.title,
+            author: user.username,
+            publish_date: Date.now(),
+            public: req.body.public,
+            text: req.body.text
+          });
+  
+          diary.save(function (err) {
+            if (err) { console.log(err.stack); return; }
+            res.status(201).json({
+              status: true,
+              result: id
+            });
+          });
+        });
+      } else {
+        return res.status(200).json({
+          status: false,
+          error: 'Invalid authentication token.',
+        });
+      }
     });
-  }
-);
+  });
 
 // POST /diary/delete - Delete an existing diary entry
 router.post(
@@ -120,17 +108,8 @@ router.post(
       .isInt()
       .toInt(),
   ],
-  function(req, res, next) {
+  function (req, res, next) {
     const { token, id } = req.body;
-
-    // Validate token.
-    // TODO: Replace this stub method.
-    if (token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-      return res.status(200).json({
-        status: false,
-        error: 'Invalid authentication token.',
-      });
-    }
 
     // Validate the form values.
     const errors = validationResult(req);
@@ -141,17 +120,36 @@ router.post(
       });
     }
 
+    //!!!need change permission
+
+    // Validate the token.
+    User.findOne({ token: req.body.token }, function (err, user) {
+      if (user) {
+        Diary.deleteOne({ id: req.body.id }, function (err) {
+          if (err) return console.error(err);
+          return res.status(200).json({
+            status: true
+          });
+        });
+      } else {
+        return res.status(200).json({
+          status: false,
+          error: 'Invalid authentication token.',
+        });
+      }
+    });
+
     // Validate that the diary entry exists and the user has permissions to delete the entry.
     // After that purge the entry from the database.
     // TODO: Replace this stub method.
-    if (id !== 2) {
-      return res.status(200).json({
-        status: false,
-        error: 'You are not allowed to perform this action.',
-      });
-    }
+    // if (id !== 2) {
+    //   return res.status(200).json({
+    //     status: false,
+    //     error: 'You are not allowed to perform this action.',
+    //   });
+    // }
 
-    res.status(200).json({ status: true });
+    // res.status(200).json({ status: true });
   }
 );
 
@@ -165,17 +163,8 @@ router.post(
       .toInt(),
     check('public').isBoolean(),
   ],
-  function(req, res, next) {
+  function (req, res, next) {
     const { token, id, public: isPublic } = req.body;
-
-    // Validate token.
-    // TODO: Replace this stub method.
-    if (token !== '6bf00d02-dffc-4849-a635-a21b08500d61') {
-      return res.status(200).json({
-        status: false,
-        error: 'Invalid authentication token.',
-      });
-    }
 
     // Validate the form values.
     const errors = validationResult(req);
@@ -186,17 +175,42 @@ router.post(
       });
     }
 
+    // Validate token.
+    User.findOne({ token: req.body.token }, function (err, user) {
+      if (user) {
+        //Todo extra validation
+        Diary.findOne({ id: req.body.id }, function (err, diary) {
+          if (err) { console.error(err); return; }
+
+          if (diary) {
+            diary.public = req.body.public
+            diary.save()
+
+            return res.status(200).json({
+              status: true
+            });
+          }
+        });
+      } else {
+        return res.status(200).json({
+          status: false,
+          error: 'Invalid authentication token.',
+        });
+      }
+    });
+
+    //TODO
     // Validate that the diary entry exists and the user has permissions to delete the entry.
     // After that modify the permissions of the diary entry.
     // TODO: Replace this stub method.
-    if (id !== 2) {
-      return res.status(200).json({
-        status: false,
-        error: 'You are not allowed to perform this action.',
-      });
-    }
+    // if (id !== 2) {
+    //   return res.status(200).json({
+    //     status: false,
+    //     error: 'You are not allowed to perform this action.',
+    //   });
+    // }
 
-    res.status(200).json({ status: true });
+    // res.status(200).json({ status: true });
   }
 );
 
