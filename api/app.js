@@ -4,6 +4,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
+const resultWrapper = require('./middlewares/result_wrapper');
 
 //Set up mongoose
 const mongoose = require('mongoose');
@@ -16,6 +17,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(resultWrapper());
 
 // Add routes.
 app.use('/', routes);
@@ -29,15 +31,10 @@ app.use(function(req, res, next) {
 
 // Error handler
 app.use(function(err, req, res, next) {
-  const body = { status: false };
+  const body = { status: false, error: err.message };
 
-  // Add error message only if provided.
-  if (err.message && err.message.length) {
-    body.error = err.message;
-  }
-
-  // Defaults to 500 Internal Server Error.
-  res.status(err.status || 500);
+  // Defaults to 200 OK.
+  res.status(err.status || 200);
   res.json(body);
 });
 

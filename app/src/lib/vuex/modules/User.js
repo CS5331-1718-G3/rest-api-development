@@ -43,7 +43,7 @@ const actions = {
 
     // Retrieve user information.
     try {
-      const { status, ...user } = await post('/users', { token });
+      const user = await post('/users', { token });
       commit(SET_USER_PROFILE, user);
 
       return user;

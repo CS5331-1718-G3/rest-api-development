@@ -17,24 +17,6 @@ fi
 
 TEAMID=`echo $MD5 | cut -d' ' -f 1`
 
-# Stop existing container(s)
-CONTAINERS=`docker ps -a -q --filter ancestor=$TEAMID`
-IFS=$'\n'
-for container in $CONTAINERS
-do
-  echo "Stopping and removing existing container $container..."
-  docker kill $container &> /dev/null
-  docker rm $container &> /dev/null
-done
+# Recreate all containers with Docker Compose.
+docker-compose --project-name $TEAMID up --force-recreate
 
-# Build the image.
-docker build -t $TEAMID .
-
-# Start the container.
-docker run \
-  -p 80:80 \
-  -p 8080:8080 \
-  -p 3306:3306 \
-  -v "$(pwd)"/api/:/var/www/api \
-  -v "$(pwd)"/app/:/var/www/app \
-  -t $TEAMID

@@ -71,7 +71,7 @@ export default {
 
   async mounted() {
     try {
-      this.entries = (await post('/diary', { token: getUserToken() })).result;
+      this.entries = await post('/diary', { token: getUserToken() });
     } catch (e) {
       this.errors.push(e.message);
     }

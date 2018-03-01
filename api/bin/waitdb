@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+const mysql = require('mysql');
+const config = require('../config');
+const { user, password, host, database } = config;
+const mysqlUrl = `mysql://${user}:${password}@${host}/${database}`;
+
+const WAIT_TIMEOUT = 1000;
+const WAIT_RETRIES = 30;
+const WAIT_TOTAL_SECONDS = WAIT_RETRIES * WAIT_TIMEOUT / 1000;
+
+let tries = 0;
+
+function checkConnection() {
+  const conn = mysql.createConnection(config);
+
+  conn.connect(function(err) {
+    // Successfully connected.
+    if (!err) {
+      console.info(`Successfully connected to MySQL database at ${mysqlUrl}!`);
+      conn.end(() => process.exit(0));
+      return;
+    }
+
+    // Otherwise, try to reconnect if number of tries is not exceeded.
+    if (++tries < WAIT_RETRIES) {
+      setTimeout(checkConnection, WAIT_TIMEOUT);
+      return;
+    }
+
+    // Otherwise, report and exit if we cannot establish a connection after the maximum time.
+    const errorMessage = `Could not establish connection to MySQL database at ${mysqlUrl} after ${WAIT_TOTAL_SECONDS}s.`;
+    console.error(errorMessage);
+    process.exit(1);
+  });
+}
+
+// Start checking the connection.
+checkConnection();

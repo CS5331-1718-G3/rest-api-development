@@ -23,10 +23,7 @@ router.post(
     // Form validation.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({
-        status: false,
-        error: 'Validation failed.',
-      });
+      throw new Error('Validation failed.');
     }
 
     User.count({ username: req.body.username }, function (err, count) {
@@ -52,6 +49,15 @@ router.post(
         });
       }
     });
+
+    // Check if a user with an existing username already exists,
+    // otherwise create the user in the database.
+    // TODO: Replace this stub method.
+    // if (username === 'admin') {
+    //   throw new Error('User already exists!');
+    // }
+
+    // res.status(201).json();
   }
 );
 
@@ -65,7 +71,7 @@ router.post(
     // Form validation.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({ status: false });
+      throw new Error('Validation failed.');
     }
 
     // Authenticate a user based on username/password combo.
@@ -91,6 +97,14 @@ router.post(
         return res.status(200).json({ status: false });
       }
     });
+//=======
+//   if (username !== 'admin' || password !== 'password') {
+//      throw new Error();
+//    }
+//
+//    const token = '6bf00d02-dffc-4849-a635-a21b08500d61';
+//    res.status(200).json({ token });
+//>>>>>>> bb7c1b04f5e65e890b6f3443515af550bdb77ab6
   }
 );
 
@@ -101,7 +115,7 @@ router.post('/expire', [check('token').exists()], function (req, res, next) {
   // Form validation.
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(200).json({ status: false });
+    throw new Error('Validation failed.');
   }
 
   User.findOne({ token: req.body.token }, function (err, user) {
@@ -123,7 +137,7 @@ router.post('/', [check('token').exists()], function (req, res, next) {
   // Form validation.
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(200).json({ status: false });
+    throw new Error('Validation failed.');
   }
 
   User.findOne({ token: req.body.token }, function (err, user) {

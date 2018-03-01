@@ -50,7 +50,7 @@ export default {
 
   async mounted() {
     try {
-      this.entries = (await get('/diary')).result;
+      this.entries = await get('/diary');
     } catch (e) {
       this.errors.push(e.message);
     }

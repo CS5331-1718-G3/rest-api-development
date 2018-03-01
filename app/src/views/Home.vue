@@ -3,6 +3,18 @@
     <h3 class="title is-h3">Secret Diary</h3>
     <h5 class="subtitle is-h5">CS5331 Assignment 1</h5>
     <hr>
+
+    <div class="content" v-if="isLoggedIn">
+      <h4>Welcome back, {{ user.username }}.</h4>
+      <ul>
+        <li>
+          <strong>Full Name:</strong> {{ user.fullname }}</li>
+        <li>
+          <strong>Age:</strong> {{ user.age }}</li>
+      </ul>
+      <hr>
+    </div>
+
     <div class="content">
       <h4>REST API Status</h4>
       <div class="tags has-addons">
@@ -31,6 +43,8 @@
 
 <script>
 import { get, getStatus } from '../utils/restClient';
+import { mapGetters, mapState } from 'vuex';
+import { IS_LOGGED_IN } from '../lib/vuex/getterTypes';
 
 export default {
   data() {
@@ -41,6 +55,11 @@ export default {
     };
   },
 
+  computed: {
+    ...mapGetters({ isLoggedIn: IS_LOGGED_IN }),
+    ...mapState({ user: state => state.User.profile }),
+  },
+
   async created() {
     try {
       this.status = await getStatus('/meta/heartbeat');
@@ -49,7 +68,7 @@ export default {
     }
 
     try {
-      this.members = (await get('/meta/members')).result;
+      this.members = await get('/meta/members');
     } catch (e) {
       this.errors.push(e.message);
     }

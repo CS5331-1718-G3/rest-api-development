@@ -21,6 +21,7 @@ router.post('/', [check('token').exists()], function (req, res, next) {
 
   // Validate the token and retrieve the private diary entries.
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return res.status(200).json({
       status: false,
@@ -59,10 +60,7 @@ router.post(
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({
-        status: false,
-        error: 'Validation failed.',
-      });
+      throw new Error('Validation failed.');
     }
 
     // Validate the token.
@@ -114,10 +112,7 @@ router.post(
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({
-        status: false,
-        error: 'Validation failed.',
-      });
+      throw new Error('Validation failed.');
     }
 
     //!!!need change permission
@@ -142,6 +137,7 @@ router.post(
     // Validate that the diary entry exists and the user has permissions to delete the entry.
     // After that purge the entry from the database.
     // TODO: Replace this stub method.
+
     // if (id !== 2) {
     //   return res.status(200).json({
     //     status: false,
@@ -169,10 +165,7 @@ router.post(
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(200).json({
-        status: false,
-        error: 'Validation failed.',
-      });
+      throw new Error('Validation failed.');
     }
 
     // Validate token.
