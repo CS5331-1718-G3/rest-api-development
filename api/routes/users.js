@@ -4,6 +4,7 @@ const router = express.Router({ mergeParams: true });
 //const mongodb = require('../database');
 const User = require('../database/user_model');
 const uuidv4 = require('uuid/v4');
+const crypto = require('crypto');
 
 // POST /users/register - Register a new user
 router.post(
@@ -34,10 +35,13 @@ router.post(
           status: false,
           error: 'User already exists!',
         })
-      } else {
+      } else {       
+        const hmac = crypto.createHmac('sha512', req.body.username);
+        hmac.update(req.body.password);
+
         var user = new User({
           username: req.body.username,
-          password: req.body.password,
+          password: hmac.digest('hex'),
           fullname: req.body.fullname,
           age: req.body.age
         });
@@ -69,8 +73,10 @@ router.post(
     // if (username !== 'admin' || password !== 'password') {
     //   return res.status(200).json({ status: false });
     // }
+    const hmac = crypto.createHmac('sha512', req.body.username);
+    hmac.update(req.body.password);
 
-    User.count({ username: req.body.username, password: req.body.password }, function (err, count) {
+    User.count({ username: req.body.username, password: hmac.digest('hex') }, function (err, count) {
       if (count == 1) {
         const uuid = uuidv4();
         User.findOneAndUpdate({ username: req.body.username }, { token: uuid }, function (err) {

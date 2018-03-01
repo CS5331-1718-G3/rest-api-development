@@ -22,7 +22,8 @@
     "serve-favicon": "~2.4.5",
     "mongodb": "3.0.3",
     "mongoose": "5.0.7",
-    "uuid": "3.2.1"
+    "uuid": "3.2.1",
+    "mongoose-auto-increment": "5.0.1"
   },
   "devDependencies": {
     "nodemon": "^1.15.1"

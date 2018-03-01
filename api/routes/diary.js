@@ -68,10 +68,28 @@ router.post(
     // Validate the token.
     User.findOne({ token: req.body.token }, function (err, user) {
       if (user) {
-        Diary.find({ author: user.username }, function (err, diaries) {
-          if (err) return console.error(err);
-          res.status(200).json({ status: true, result: diaries });
-        })
+        // Add a new diary entry to the database afterwards.
+        //const id = 2
+
+        //Should do better code for auto incr.
+        Diary.count(function(err, id) {
+          var diary = new Diary({
+            'id': id + 1, //count starts from 0
+            title: req.body.title,
+            author: user.username,
+            publish_date: Date.now(),
+            public: req.body.public,
+            text: req.body.text
+          });
+  
+          diary.save(function (err) {
+            if (err) { console.log(err.stack); return; }
+            res.status(201).json({
+              status: true,
+              result: id
+            });
+          });
+        });
       } else {
         return res.status(200).json({
           status: false,
@@ -79,26 +97,7 @@ router.post(
         });
       }
     });
-
-    // Add a new diary entry to the database afterwards.
-    const id = 2;
-
-    var diary = new Diary({
-      title: req.body.title,
-      public: req.body.isPublic,
-      text: req.body.text
-    });
-
-    diary.save(function (err) {
-      if (err) { console.log(err.stack); return; }
-
-      res.status(201).json({
-        status: true,
-        result: id
-      });
-    });
-  }
-);
+  });
 
 // POST /diary/delete - Delete an existing diary entry
 router.post(
@@ -179,11 +178,13 @@ router.post(
     // Validate token.
     User.findOne({ token: req.body.token }, function (err, user) {
       if (user) {
+        //Todo extra validation
         Diary.findOne({ id: req.body.id }, function (err, diary) {
           if (err) { console.error(err); return; }
 
           if (diary) {
-            diary.public = req.body.public;
+            diary.public = req.body.public
+            diary.save()
 
             return res.status(200).json({
               status: true
