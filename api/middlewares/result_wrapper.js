@@ -19,7 +19,7 @@ const transformer = function(json) {
     return removeEmpty(json);
   }
 
-  return removeEmpty({ status: true, result: json });
+  // return removeEmpty({ status: true, result: json });
 };
 
 module.exports = function() {

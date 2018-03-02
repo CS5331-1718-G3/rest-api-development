@@ -150,7 +150,7 @@ router.post('/', [check('token').exists()], function (req, res, next) {
           age: user.age
         }
       });
-      res.status(200).json({ status: true });
+      
     } else {
       return res.status(200).json({
         status: false,

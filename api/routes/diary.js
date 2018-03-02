@@ -124,6 +124,7 @@ router.post(
       if (user) {
         Diary.deleteOne({ id: req.body.id }, function (err) {
           if (err) return console.error(err);
+          
           return res.status(200).json({
             status: true
           });
@@ -131,7 +132,7 @@ router.post(
       } else {
         return res.status(200).json({
           status: false,
-          error: 'Invalid authentication token.',
+          error: 'Invalid authentication token.'
         });
       }
     });
