@@ -30,7 +30,7 @@ CS5331 Assignment 1 Project
 #### REST API
 
 * [_Express_](https://expressjs.com/): Web framework popular for REST APIs in Node.js
-* [_MySQL_](https://www.mysql.com/): Database server
+* [_Mongo-Express_](https://github.com/mongo-express/mongo-express): Database server
 
 #### Development and deployment
 
@@ -58,7 +58,15 @@ The workaround would be to set up a proxy server running on port `80` that proxi
 
 ### Question 5: Is your web application vulnerable? If yes, how and why? If not, what measures did you take to secure it?
 
-Answer: Yes, in multiple ways. Firstly our web application is using Http and not Https, meaning any passive sniffer on the same network will be able to view all of the transmission and thus our "secret" diaries are not so secret anymore as it is transferred in cleartext. Our application is also susceptible to session hijacking/user impersonation as our token is sent in cleartext, and eve and mallory can easily impersonate any user that is concurrently using the web application. Our passwords are stored in hash using SHA512 as recommended in the assignment and it is further salted with the user's username, however because we do not have length requirement for username, the salt can be ineffective as opposed to a longer salt and our next iteration of the project would be to use the user's unique uuidv4 as the salt. Likewise we do not have password complexity requirement, and user are highly susceptible to bruteforce attack, our next iteration would be to have a fair password complexity requirement. Most of our user inputs are not sanitised and could be susceptible to injection attacks, and because our front-end and back-end API are seperated, even with a sanitisation at the GUI front-end, a attacker will be able to attack the back-end API by bypassing the GUI filtering using tool like curl. Currently our mongo database is exposed on port 8081 without any password protection, this is to facilitate development and should not be exposed in a real web application.
+Answer: Yes, in multiple ways. Firstly our web application is using Http and not Https, meaning any passive sniffer on the same network will be able to view all of the transmission and thus our "secret" diaries are not so secret anymore as it is transferred in cleartext. 
+
+Our application is also susceptible to session hijacking/user impersonation as our token is sent in cleartext, and eve and mallory can easily impersonate any user that is concurrently using the web application. 
+
+Our passwords are stored in hash using SHA512 as recommended in the assignment and it is further salted with the user's username, however because we do not have length requirement for username, the salt can be ineffective as opposed to a longer salt and our next iteration of the project would be to use the user's unique uuidv4 as the salt. Likewise we do not have password complexity requirement, and user are highly susceptible to bruteforce attack, our next iteration would be to have a fair password complexity requirement. 
+
+Most of our user inputs are not sanitised and could be susceptible to injection attacks, and because our front-end and back-end API are seperated, even with a sanitisation at the GUI front-end, a attacker will be able to attack the back-end API by bypassing the GUI filtering using tool like curl. 
+
+Currently our mongo database is exposed on port 8081 without any password protection, this is to facilitate development and should not be exposed in a real web application.
 
 ### Feedback: Is there any other feedback you would like to give?
 
