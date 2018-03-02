@@ -9,7 +9,8 @@ const Diary = require('../database/diary_model');
 
 // GET /diary - Retrieve all public diary entries
 router.get('/', function (req, res, next) {
-  Diary.find({ public: true }, function (err, diaries) {
+  //-_id tells mongoose not to select _id
+  Diary.find({ public: true }, 'id title author publish_date public text -_id', function (err, diaries) {
     if (err) return console.error(err);
     res.status(200).json({ status: true, result: diaries });
   })
@@ -31,7 +32,8 @@ router.post('/', [check('token').exists()], function (req, res, next) {
 
   User.findOne({ token: req.body.token }, function (err, user) {
     if (user) {
-      Diary.find({ author: user.username }, function (err, diaries) {
+      //-_id tells mongoose not to select _id      
+      Diary.find({ author: user.username }, 'id title author publish_date public text -_id', function (err, diaries) {
         if (err) return console.error(err);
         res.status(200).json({ status: true, result: diaries });
       })
