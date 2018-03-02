@@ -38,7 +38,7 @@ CS5331 Assignment 1 Project
 
 ### Question 2: Are there any security considerations your team thought about?
 
-Answer: Please replace this sentence with your answer.
+Answer: We did not put a lot of security considerations in the project as it is out of the scope of the project, a security consideration we had was to salt the password hashes with the username to prevent rainbow table attacks.
 
 ### Question 3: Are there any improvements you would make to the API specification to improve the security of the web application?
 
@@ -58,7 +58,7 @@ The workaround would be to set up a proxy server running on port `80` that proxi
 
 ### Question 5: Is your web application vulnerable? If yes, how and why? If not, what measures did you take to secure it?
 
-Answer: Please replace this sentence with your answer.
+Answer: Yes, in multiple ways. Firstly our web application is using Http and not Https, meaning any passive sniffer on the same network will be able to view all of the transmission and thus our "secret" diaries are not so secret anymore as it is transferred in cleartext. Our application is also susceptible to session hijacking/user impersonation as our token is sent in cleartext, and eve and mallory can easily impersonate any user that is concurrently using the web application. Our passwords are stored in hash using SHA512 as recommended in the assignment and it is further salted with the user's username, however because we do not have length requirement for username, the salt can be ineffective as opposed to a longer salt and our next iteration of the project would be to use the user's unique uuidv4 as the salt. Likewise we do not have password complexity requirement, and user are highly susceptible to bruteforce attack, our next iteration would be to have a fair password complexity requirement. Most of our user inputs are not sanitised and could be susceptible to injection attacks, and because our front-end and back-end API are seperated, even with a sanitisation at the GUI front-end, a attacker will be able to attack the back-end API by bypassing the GUI filtering using tool like curl. Currently our mongo database is exposed on port 8081 without any password protection, this is to facilitate development and should not be exposed in a real web application.
 
 ### Feedback: Is there any other feedback you would like to give?
 
@@ -79,6 +79,7 @@ Finally, the marks weightage for the UI is rather low at 5%, compared to the RES
 ### Please declare your individual contributions to the assignment:
 
 1. Au-yong Xiang Rong Alwinson
+    * Testing and Documentation
 2. Irvin Lim Wei Quan
     * Set up `Dockerfile` and Bash scripts
     * Wrote the frontend app
