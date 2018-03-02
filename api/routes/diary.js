@@ -6,6 +6,7 @@ const router = express.Router({ mergeParams: true });
 
 const User = require('../database/user_model');
 const Diary = require('../database/diary_model');
+const Counter = require('../database/counter_model');
 
 // GET /diary - Retrieve all public diary entries
 router.get('/', function (req, res, next) {
@@ -68,28 +69,27 @@ router.post(
     // Validate the token.
     User.findOne({ token: req.body.token }, function (err, user) {
       if (user) {
-        // Add a new diary entry to the database afterwards.
-        //const id = 2
+        // Add a new diary entry to the database afterwards.        
+        var diary = new Diary({
+          title: req.body.title,
+          author: user.username,
+          publish_date: Date.now(),
+          public: req.body.public,
+          text: req.body.text
+        });
 
-        //Should do better code for auto incr.
-        Diary.count(function(err, id) {
-          var diary = new Diary({
-            'id': id + 1, //count starts from 0
-            title: req.body.title,
-            author: user.username,
-            publish_date: Date.now(),
-            public: req.body.public,
-            text: req.body.text
-          });
-  
-          diary.save(function (err) {
-            if (err) { console.log(err.stack); return; }
+        diary.save(function (err) {
+          if (err) { console.log(err.stack); return; }
+
+          // Get the id we just inserted
+          Counter.findOne({ 'id': 'id' }, function (err, counter) {
             res.status(201).json({
               status: true,
-              result: id
+              result: { id: counter.seq }
             });
           });
         });
+
       } else {
         return res.status(200).json({
           status: false,
@@ -124,7 +124,7 @@ router.post(
       if (user) {
         Diary.deleteOne({ id: req.body.id }, function (err) {
           if (err) return console.error(err);
-          
+
           return res.status(200).json({
             status: true
           });
