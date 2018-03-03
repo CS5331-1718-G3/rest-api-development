@@ -41,7 +41,7 @@ CS5331 Assignment 1 Project
 
 #### Password security
 
-In order to prevent rainbow table attacks, we used a random salt for each password hash, using the popular implementation `bcrypt`.
+In order to prevent rainbow table attacks, we used a random salt for each password hash, using the popular implementation `bcrypt`. This method generates a random 128-bit salt each time a hash is generated, appended to the original password, followed by a generation of a 184-bit hash digest using the Blowfish cipher.
 
 #### Authorization and policy checks
 
@@ -111,11 +111,15 @@ The workaround would be to set up a proxy server running on port `80` that proxi
 
 Firstly our web application is using HTTP and not HTTPS, meaning any passive sniffer on the same network will be able to view all of the transmission and thus our "secret" diaries are not so secret anymore as it is transferred in cleartext.
 
-Our application is also susceptible to session hijacking/user impersonation as our token is sent in cleartext, and Eve and Mallory can easily impersonate any user that is concurrently using the web application.
+Our application is also susceptible to session hijacking/user impersonation as our token is sent in cleartext, and Eve and Mallory can easily impersonate any user that is concurrently using the web application by snooping on the token that is sent through many of the POST requests.
+
+The solution is to simply enforce HTTPS with HTTP redirection to HTTPS. Further defenses such HPKP and HSTS can be employed to prevent HTTPS downgrading and fraudulent certificates from being used.
 
 #### Cross-Site Request Forgery (CSRF)
 
-_TODO_
+Our web application is also susceptible to CSRF, as a malicious site could induce an unsuspecting user to submit a form or visit a page which fires a `XMLHttpRequest`, firing a request to the site. Although cookies are not used in this application which prevents session riding attacks, any particular URL which results in an undesirable change in the user's state could be potentially exploited, through a simple `GET` request such as through `img` tags.
+
+The solution is to employ an anti-CSRF token that should be tied to the user's session. This token should be valid and sent to the server, either as a cookie or a POST data parameter, and the server should validate if this token is valid for the session before allowing the rest of the request to proceed.
 
 ### Feedback: Is there any other feedback you would like to give?
 
