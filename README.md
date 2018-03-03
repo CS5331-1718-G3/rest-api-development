@@ -64,6 +64,20 @@ To prevent XSS, using a UI library such as Vue.js is helpful, since all UI eleme
 
 By ensuring a single source of truth of data from the API server, this prevents potential double-unescaping bugs which may result in HTML elements being rendered on the browser.
 
+This prevents both reflected and persistent XSS, since we are escaping untrusted input when it is being displayed as HTML.
+
+#### Cross-Origin Resource Sharing (CORS)
+
+_TODO_
+
+#### Cookie domains
+
+_TODO_
+
+#### Session ID prediction
+
+_TODO_
+
 ### Question 3: Are there any improvements you would make to the API specification to improve the security of the web application?
 
 #### Authorization checks
@@ -96,7 +110,7 @@ Firstly our web application is using HTTP and not HTTPS, meaning any passive sni
 
 Our application is also susceptible to session hijacking/user impersonation as our token is sent in cleartext, and Eve and Mallory can easily impersonate any user that is concurrently using the web application.
 
-#### Cross-Site Request Forgery
+#### Cross-Site Request Forgery (CSRF)
 
 _TODO_
 
