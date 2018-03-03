@@ -76,7 +76,7 @@ _TODO_
 
 #### Session ID prediction
 
-_TODO_
+To prevent the possibility of session ID prediction, in which an attacker can sucessfully predicts a user's session ID, our session ID are generated using a Cryptographically Secure Pseudo-Random Number Generator by using uuid version 4. Which eliminate the possibility of an attacker being able to predict a user session ID
 
 ### Question 3: Are there any improvements you would make to the API specification to improve the security of the web application?
 
