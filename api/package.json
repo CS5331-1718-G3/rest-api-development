@@ -6,7 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "npm run dev",
+    "start": "npm run waitdb && npm run dev",
+    "waitdb": "node ./bin/waitdb",
     "dev": "babel-watch ./bin/www"
   },
   "dependencies": {
