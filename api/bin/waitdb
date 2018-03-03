@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const mysql = require('mysql');
+const mongo = require('mongodb').MongoClient;
 const config = require('../config');
 const { user, password, host, database } = config;
-const mysqlUrl = `mysql://${user}:${password}@${host}/${database}`;
+const uri = `mongodb://${host}/${database}`;
 
 const WAIT_TIMEOUT = 1000;
 const WAIT_RETRIES = 30;
@@ -12,13 +12,11 @@ const WAIT_TOTAL_SECONDS = WAIT_RETRIES * WAIT_TIMEOUT / 1000;
 let tries = 0;
 
 function checkConnection() {
-  const conn = mysql.createConnection(config);
-
-  conn.connect(function(err) {
+  const conn = mongo.connect(uri, (err, client) => {
     // Successfully connected.
     if (!err) {
-      console.info(`Successfully connected to MySQL database at ${mysqlUrl}!`);
-      conn.end(() => process.exit(0));
+      console.info(`Successfully connected to MongoDB database at ${uri}!`);
+      client.close().then(() => process.exit(0));
       return;
     }
 
@@ -29,7 +27,7 @@ function checkConnection() {
     }
 
     // Otherwise, report and exit if we cannot establish a connection after the maximum time.
-    const errorMessage = `Could not establish connection to MySQL database at ${mysqlUrl} after ${WAIT_TOTAL_SECONDS}s.`;
+    const errorMessage = `Could not establish connection to MongoDB database at ${uri} after ${WAIT_TOTAL_SECONDS}s.`;
     console.error(errorMessage);
     process.exit(1);
   });
