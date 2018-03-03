@@ -3,7 +3,7 @@ const { check, validationResult } = require('express-validator/check');
 const router = express.Router({ mergeParams: true });
 const User = require('../database/user_model');
 const uuidv4 = require('uuid/v4');
-const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 // POST /users/register - Register a new user
 router.post(
@@ -32,8 +32,8 @@ router.post(
     }
 
     // Hash the password.
-    const hmac = crypto.createHmac('sha512', username).update(password);
-    const hash = hmac.digest('hex');
+    const bcryptSaltRounds = 10;    
+    const hash = await bcrypt.hash(password, bcryptSaltRounds);
 
     // Create the user with password.
     const user = new User({ username, password: hash, fullname, age });
@@ -56,13 +56,17 @@ router.post(
       return next(new Error('Validation failed.'));
     }
 
-    // Hash the password and compare the hash.
-    const hmac = crypto.createHmac('sha512', username).update(password);
-    const hash = hmac.digest('hex');
-
     // Fail if there is no such user.
-    const count = await User.count({ username, password: hash });
-    if (count !== 1) {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return next(new Error());
+    }
+
+    // Compare entered password with hashed password in the database
+    const passwordMatches = await bcrypt.compare(password, user.password);
+
+    // Fail if password do not match
+    if (!passwordMatches) {
       return next(new Error());
     }
 
