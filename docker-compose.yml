@@ -1,6 +1,8 @@
 version: '3'
 
 services:
+
+  # Vue.js app
   app:
     image: node:8
     user: "node"
@@ -12,11 +14,13 @@ services:
     command: bash -c "npm install && npm start"
     depends_on:
       - api
+    restart: on-failure
     environment:
       WDS_PORT: 3000
       WDS_PUBLIC_SOCKET: localhost:80
       WDS_PROXY_TARGET: http://api:3000
   
+  # REST API
   api:
     image: node:8
     user: "node"
@@ -28,6 +32,7 @@ services:
     command: bash -c "npm install && npm start"
     depends_on:
       - mongo
+    restart: on-failure
     environment:
       PORT: 3000
       MONGO_HOST: mongo
@@ -38,14 +43,4 @@ services:
     image: mongo
     volumes:
       - /data/db
-
-  # mongodb web managment ui
-  # TODO: Remove this before submission.
-  mongo-express: 
-    image: mongo-express 
-    links:
-      - mongo:mongo
-    ports :
-      - "8081:8081"
-    restart : always
-    command : sh -c 'sleep 10 && tini -- node app'
+    restart: on-failure
