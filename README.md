@@ -69,15 +69,17 @@ This prevents both reflected and persistent XSS, since we are escaping untrusted
 
 #### Cross-Origin Resource Sharing (CORS)
 
-_TODO_
+Rather than enabling CORS by setting the `Access-Control-Allow-Origin` header so that cross-origin `XMLHttpRequest`s can be made successfully, we proxied any requests to the app server (i.e. `localhost:80`) on the `/api` route to the API server (i.e. `localhost:8080`). This prevents arbitrary access of the API from other origins, such as a malicious site.
+
+More details are explained under [Question 4: Proxying of the API Server](#proxying-of-api-server).
 
 #### Cookie domains
 
-_TODO_
+The cookies that are saved on the client are restricted to the same domain as the actual site. This means that any requests that the browser makes that are made outside of the site's domain, will not have the cookies sent along with it. This prevents session hijacking attacks, such as through XSS (if possible), or if an externally-hosted JavaScript file that is embedded in the website is compromised.
 
 #### Session ID prediction
 
-To prevent the possibility of session ID prediction, in which an attacker can sucessfully predicts a user's session ID, our session ID are generated using a Cryptographically Secure Pseudo-Random Number Generator by using uuid version 4. Which eliminate the possibility of an attacker being able to predict a user session ID
+To prevent the possibility of session ID prediction, in which an attacker can sucessfully predicts a user's session ID, our session ID are generated using a cryptographically secure pseudo-random number generator (PRNG) by using UUID version 4, which eliminates the possibility of an attacker being able to predict a user session ID, and hence spoof the identity of another logged in user.
 
 ### Question 3: Are there any improvements you would make to the API specification to improve the security of the web application?
 
@@ -93,7 +95,7 @@ Additionally, password complexity should also be enforced (e.g. a combination of
 
 ### Question 4: Are there any additional features you would like to highlight?
 
-#### Proxying of API server
+#### Proxying of API server (#proxying-of-api-server)
 
 Due to the Same-Origin policy, most modern browsers do not allow `XMLHttpRequest`s to be made across different origins (i.e. combination of protocol, domain and port number) unless Cross-Origin Resource Sharing (CORS) is explicitly allowed by the cross-origin server that is serving the remote resource.
 
