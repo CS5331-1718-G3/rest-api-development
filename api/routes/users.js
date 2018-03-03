@@ -1,29 +1,33 @@
 const express = require('express');
-const { check, validationResult } = require('express-validator/check');
 const router = express.Router({ mergeParams: true });
-const User = require('../database/user_model');
+const { celebrate, Joi } = require('celebrate');
 const uuidv4 = require('uuid/v4');
 const crypto = require('crypto');
+
+const User = require('../database/user_model');
 
 // POST /users/register - Register a new user
 router.post(
   '/register',
-  [
-    check('username').isLength({ min: 1 }),
-    check('password').isLength({ min: 1 }),
-    check('fullname').isLength({ min: 1 }),
-    check('age')
-      .isInt()
-      .custom(value => value > 0),
-  ],
+  celebrate({
+    body: {
+      username: Joi.string()
+        .min(1)
+        .required(),
+      password: Joi.string()
+        .min(1)
+        .required(),
+      fullname: Joi.string()
+        .min(1)
+        .required(),
+      age: Joi.number()
+        .integer()
+        .min(1)
+        .required(),
+    },
+  }),
   async function(req, res, next) {
     const { username, password, fullname, age } = req.body;
-
-    // Form validation.
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new Error('Validation failed.'));
-    }
 
     // Check if a user with an existing username already exists.
     const count = await User.count({ username: username });
@@ -46,15 +50,18 @@ router.post(
 // POST /users/authenticate - Authenticate an existing user
 router.post(
   '/authenticate',
-  [check('username').exists(), check('password').exists()],
+  celebrate({
+    body: {
+      username: Joi.string()
+        .min(1)
+        .required(),
+      password: Joi.string()
+        .min(1)
+        .required(),
+    },
+  }),
   async function(req, res, next) {
     const { username, password } = req.body;
-
-    // Form validation.
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new Error('Validation failed.'));
-    }
 
     // Hash the password and compare the hash.
     const hmac = crypto.createHmac('sha512', username).update(password);
@@ -76,54 +83,54 @@ router.post(
 );
 
 // POST /users/expire - Expire an authentication token.
-router.post('/expire', [check('token').exists()], async function(
-  req,
-  res,
-  next
-) {
-  const { token } = req.body;
+router.post(
+  '/expire',
+  celebrate({
+    body: {
+      token: Joi.string().required(),
+    },
+  }),
+  async function(req, res, next) {
+    const { token } = req.body;
 
-  // Form validation.
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(new Error('Validation failed.'));
+    // Fail if there is no such user.
+    const user = await User.findOne({ token });
+    if (!user) {
+      return next(new Error());
+    }
+
+    // Remove token from the user document.
+    user.token = '';
+    await user.save();
+
+    res.status(200).json();
   }
-
-  // Fail if there is no such user.
-  const user = await User.findOne({ token });
-  if (!user) {
-    return next(new Error());
-  }
-
-  // Remove token from the user document.
-  user.token = '';
-  await user.save();
-
-  res.status(200).json();
-});
+);
 
 // POST /users - Retrieve authenticated user information
-router.post('/', [check('token').exists()], async function(req, res, next) {
-  const { token } = req.body;
+router.post(
+  '/',
+  celebrate({
+    body: {
+      token: Joi.string().required(),
+    },
+  }),
+  async function(req, res, next) {
+    const { token } = req.body;
 
-  // Form validation.
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(new Error('Validation failed.'));
+    // Validate the token.
+    const user = await User.findOne({ token });
+    if (!user) {
+      return next(new Error('Invalid authentication token.'));
+    }
+
+    // Return the user profile without the password field.
+    return res.status(200).json({
+      username: user.username,
+      fullname: user.fullname,
+      age: user.age,
+    });
   }
-
-  // Validate the token.
-  const user = await User.findOne({ token });
-  if (!user) {
-    return next(new Error('Invalid authentication token.'));
-  }
-
-  // Return the user profile without the password field.
-  return res.status(200).json({
-    username: user.username,
-    fullname: user.fullname,
-    age: user.age,
-  });
-});
+);
 
 module.exports = router;

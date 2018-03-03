@@ -4,6 +4,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const resultWrapper = require('./middlewares/result_wrapper');
+const { isCelebrate } = require('celebrate');
 
 // Set up database connections.
 const {host, database} = require('./config')
@@ -38,6 +39,12 @@ app.use(function(err, req, res, next) {
 
   // Defaults to 200 OK.
   res.status(err.status || 200);
+
+  // Handle validation errors.
+  if (isCelebrate(err)) {
+    return res.json('Validation failed.');
+  }
+
   res.json(body);
 });
 
