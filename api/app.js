@@ -3,12 +3,13 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const routes = require('./routes');
 const resultWrapper = require('./middlewares/result_wrapper');
 
-// Set up Mongoose.
+// Set up database connections.
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 mongoose.connect('mongodb://mongo/App');
+autoIncrement.initialize(mongoose.connection);
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.use(resultWrapper());
 
 // Add routes.
+const routes = require('./routes');
 app.use('/', routes);
 
 // Catch 404 and forward to error handler.

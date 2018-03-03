@@ -10,7 +10,7 @@ const Diary = require('../database/diary_model');
 // GET /diary - Retrieve all public diary entries
 router.get('/', async function(req, res, next) {
   // Return all public diary entries most recent first.
-  const diaries = await Diary.find({ public: true }, { _id: 0, __v: 0 }).sort({
+  const diaries = await Diary.find({ public: true }, { _id: 0 }).sort({
     publish_date: -1,
   });
 
@@ -35,10 +35,7 @@ router.post('/', [check('token').exists()], async function(req, res, next) {
   }
 
   // Return the user's diaries.
-  const diaries = await Diary.find(
-    { author: user.username },
-    { _id: 0, __v: 0 }
-  );
+  const diaries = await Diary.find({ author: user.username }, { _id: 0 });
   res.status(200).json(diaries);
 });
 
@@ -67,13 +64,8 @@ router.post(
       return next(new Error('Invalid authentication token.'));
     }
 
-    // Get the auto increment.
-    // TODO: This is not correct, what if you delete then add again?
-    const count = await Diary.count();
-
     // Save new diary entry.
     const diary = new Diary({
-      id: count + 1,
       title,
       author: user.username,
       publish_date: new Date(),
@@ -81,9 +73,9 @@ router.post(
       text,
     });
 
-    await diary.save();
+    const doc = await diary.save();
 
-    res.status(201).json({ id: count + 1 });
+    res.status(201).json({ id: doc.id });
   }
 );
 
@@ -113,6 +105,10 @@ router.post(
 
     // Verify if the diary entry belongs to the user.
     const diary = await Diary.findOne({ id });
+    if (!diary) {
+      return next(new Error('Invalid diary ID.'));
+    }
+
     if (diary.author !== user.username) {
       return next(new Error('You are not allowed to perform this action.'));
     }
@@ -151,6 +147,10 @@ router.post(
 
     // Verify that the user has permissions to modify the entry.
     const diary = await Diary.findOne({ id });
+    if (!diary) {
+      return next(new Error('Invalid diary ID.'));
+    }
+
     if (diary.author !== user.username) {
       return next(new Error('You are not allowed to perform this action.'));
     }
