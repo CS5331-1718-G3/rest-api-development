@@ -127,8 +127,7 @@ The REST API specification has a few oddities that are quite different from the 
 
 * Error status codes should not be `2xx`, but the more idiomatic `4xx` or `5xx` codes
 * Not all endpoints return the results in a `result` field (_Update: This has since been rectified._)
-* Sending authentication token in `POST` body rather than either cookies or `Authorization` header
-* Unable to specify the HTTP method in the endpoint to list all endpoints (`GET /`), resulting in duplicates between `GET` and `POST` endpoints at the same URL
+* Unable to specify the HTTP method in the endpoint to list all endpoints (`GET /`), resulting in duplicates between `GET` and `POST` endpoints at the same URL (not sure if we should be removing duplicates)
 
 Also, the marks weightage for the UI is rather low at 5%, compared to the REST API at 70%, when it takes up quite a fair amount of time regardless of the frontend stack being used.
 
