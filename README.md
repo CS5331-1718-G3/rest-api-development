@@ -4,10 +4,10 @@ CS5331 Assignment 1 Project
 
 ## Team Members
 
-1. Au-yong Xiang Rong Alwinson
-2. Irvin Lim Wei Quan
-3. Tan Ngee Joel Jonas
-4. Teng Yong Hao
+1.  Au-yong Xiang Rong Alwinson
+2.  Irvin Lim Wei Quan
+3.  Tan Ngee Joel Jonas
+4.  Teng Yong Hao
 
 ## Screenshots
 
@@ -22,23 +22,37 @@ CS5331 Assignment 1 Project
 
 #### Frontend
 
-* [_Vue.js_](https://vuejs.org): JavaScript view library for fast prototyping and performance
-* [_SCSS_](https://sass-lang.com/): CSS preprocessor
-* [_Webpack_](https://webpack.js.org/): Module bundler and development server for hot module reloading
-* [_Babel_](https://babeljs.io/): JavaScript transpiler
+*   [_Vue.js_](https://vuejs.org): JavaScript view library for fast prototyping and performance
+*   [_SCSS_](https://sass-lang.com/): CSS preprocessor
+*   [_Webpack_](https://webpack.js.org/): Module bundler and development server for hot module reloading
+*   [_Babel_](https://babeljs.io/): JavaScript transpiler
 
 #### REST API
 
-* [_Express_](https://expressjs.com/): Web framework popular for REST APIs in Node.js
-* [_MySQL_](https://www.mysql.com/): Database server
+*   [_Express_](https://expressjs.com/): Web framework popular for REST APIs in Node.js
+*   [_MongoDB_](https://www.mongodb.com/): Document store-based database server
 
 #### Development and deployment
 
-* [_Docker_](https://www.docker.com/): Containerization platform for reproducible and quick builds
+*   [_Docker_](https://www.docker.com/): Containerization platform for reproducible and quick builds
 
 ### Question 2: Are there any security considerations your team thought about?
 
-Answer: Please replace this sentence with your answer.
+#### Password security
+
+In order to prevent rainbow table attacks, we used a random salt for each password hash, using the popular implementation `bcrypt`.
+
+#### Authorization and policy checks
+
+Additionally, to prevent authorization vulnerabilities, we added additional verification such that users can only modify their own diary entries, even though this was not in the specifications.
+
+#### Injection vulnerabilities
+
+Since we are using MongoDB, the traditional SQL injection vulnerabilities are no longer applicable. However, a lesser-known class of injection vulnerabilities do apply to NoSQL databases such as MongoDB, if the input
+
+In order to prevent such injection attacks, we perform input sanitization at the API level, which performs some type-checking and/or restricts input to a particular subset of characters/allowed strings.
+
+Additionally, since strings are not evaluated, arbitrary objects or JavaScript will not be evaluated from strings.
 
 ### Question 3: Are there any improvements you would make to the API specification to improve the security of the web application?
 
@@ -58,17 +72,25 @@ The workaround would be to set up a proxy server running on port `80` that proxi
 
 ### Question 5: Is your web application vulnerable? If yes, how and why? If not, what measures did you take to secure it?
 
-Answer: Please replace this sentence with your answer.
+#### Insecure HTTP
+
+Firstly our web application is using HTTP and not HTTPS, meaning any passive sniffer on the same network will be able to view all of the transmission and thus our "secret" diaries are not so secret anymore as it is transferred in cleartext.
+
+Our application is also susceptible to session hijacking/user impersonation as our token is sent in cleartext, and Eve and Mallory can easily impersonate any user that is concurrently using the web application.
+
+#### Password cracking
+
+Since we do not have a password complexity requirement, users' passwords may be highly susceptible to brute-force attacks.
 
 ### Feedback: Is there any other feedback you would like to give?
 
 The REST API specification has a few oddities that are quite different from the standard REST API conventions:
 
-* Error status codes should not be `2xx`, but the more traditional `4xx` or `5xx` codes
-* Success status codes are arbitrarily assigned `200` or `201`
-* Not all endpoints return the results in a `result` field
-* Sending authentication token in `POST` body rather than either cookies or `Authorization` header
-* Unable to specify the HTTP method in the endpoint to list all endpoints (`GET /`), resulting in duplicates between `GET` and `POST` endpoints at the same URL
+*   Error status codes should not be `2xx`, but the more traditional `4xx` or `5xx` codes
+*   Success status codes are arbitrarily assigned `200` or `201`
+*   Not all endpoints return the results in a `result` field (_Update: This has since been rectified._)
+*   Sending authentication token in `POST` body rather than either cookies or `Authorization` header
+*   Unable to specify the HTTP method in the endpoint to list all endpoints (`GET /`), resulting in duplicates between `GET` and `POST` endpoints at the same URL
 
 Also, I would have liked to see Docker Compose being allowed in this assignment, since Docker containers are meant to be of a singular, atomic purpose. This allows each of the containers to start in parallel, especially if there are several long build steps within the container.
 
@@ -78,10 +100,14 @@ Finally, the marks weightage for the UI is rather low at 5%, compared to the RES
 
 ### Please declare your individual contributions to the assignment:
 
-1. Au-yong Xiang Rong Alwinson
-2. Irvin Lim Wei Quan
-    * Set up `Dockerfile` and Bash scripts
-    * Wrote the frontend app
-    * Set up the basic structure for the API server
-3. Tan Ngee Joel Jonas
-4. Teng Yong Hao
+1.  Au-yong Xiang Rong Alwinson
+    *   Testing and documentation
+2.  Irvin Lim Wei Quan
+    *   Set up Docker Compose
+    *   Wrote the frontend app
+    *   Set up the basic structure and endpoints for the REST API
+3.  Tan Ngee Joel Jonas
+    *   Testing and documentation
+4.  Teng Yong Hao
+    *   Set up the database connections to MongoDB
+    *   Actual REST API functionality for all endpoints
