@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { check, validationResult } = require('express-validator/check');
+const { celebrate, Joi } = require('celebrate');
 const router = express.Router({ mergeParams: true });
 
 const User = require('../database/user_model');
@@ -18,45 +18,42 @@ router.get('/', async function(req, res, next) {
 });
 
 // POST /diary - Retrieve all entries belonging to an authenticated user
-router.post('/', [check('token').exists()], async function(req, res, next) {
-  const { token } = req.body;
+router.post(
+  '/',
+  celebrate({
+    body: {
+      token: Joi.string().required(),
+    },
+  }),
+  async function(req, res, next) {
+    const { token } = req.body;
 
-  // Validate the token and retrieve the private diary entries.
-  const errors = validationResult(req);
+    // Find a user who has a matching token.
+    const user = await User.findOne({ token });
+    if (!user) {
+      return next(new Error('Invalid authentication token.'));
+    }
 
-  if (!errors.isEmpty()) {
-    return next(new Error('Invalid authentication token.'));
+    // Return the user's diaries.
+    const diaries = await Diary.find({ author: user.username }, { _id: 0 });
+    res.status(200).json(diaries);
   }
-
-  // Find a user who has a matching token.
-  const user = await User.findOne({ token });
-  if (!user) {
-    return next(new Error('Invalid authentication token.'));
-  }
-
-  // Return the user's diaries.
-  const diaries = await Diary.find({ author: user.username }, { _id: 0 });
-  res.status(200).json(diaries);
-});
+);
 
 // POST /diary/create - Create a new diary entry
 router.post(
   '/create',
-  [
-    check('token').exists(),
-    check('title').exists(),
-    check('text').exists(),
-    check('public').isBoolean(),
-  ],
+  celebrate({
+    body: {
+      token: Joi.string().required(),
+      title: Joi.string().required(),
+      text: Joi.string().required(),
+      public: Joi.bool().required(),
+    },
+  }),
   async function(req, res, next) {
     // `public` is reserved word in strict mode. Access using `isPublic` instead.
     const { token, title, text, public: isPublic } = req.body;
-
-    // Validate the form values.
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new Error('Validation failed.'));
-    }
 
     // Validate the token.
     const user = await User.findOne({ token: token });
@@ -82,20 +79,14 @@ router.post(
 // POST /diary/delete - Delete an existing diary entry
 router.post(
   '/delete',
-  [
-    check('token').exists(),
-    check('id')
-      .isInt()
-      .toInt(),
-  ],
+  celebrate({
+    body: {
+      token: Joi.string().required(),
+      id: Joi.number().integer().required(),
+    },
+  }),
   async function(req, res, next) {
     const { token, id } = req.body;
-
-    // Validate the form values.
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new Error('Validation failed.'));
-    }
 
     // Validate the token.
     const user = await User.findOne({ token });
@@ -123,21 +114,15 @@ router.post(
 // POST /diary/permission - Adjust diary entry permissions
 router.post(
   '/permission',
-  [
-    check('token').exists(),
-    check('id')
-      .isInt()
-      .toInt(),
-    check('public').isBoolean(),
-  ],
+  celebrate({
+    body: {
+      token: Joi.string().required(),
+      id: Joi.number().integer().required(),
+      public: Joi.bool().required(),
+    },
+  }),
   async function(req, res, next) {
     const { token, id, public: isPublic } = req.body;
-
-    // Validate the form values.
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(new Error('Validation failed.'));
-    }
 
     // Validate token.
     const user = await User.findOne({ token });
