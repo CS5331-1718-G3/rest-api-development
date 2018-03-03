@@ -70,16 +70,21 @@ export default {
   },
 
   async mounted() {
-    try {
-      this.entries = await post('/diary', { token: getUserToken() });
-    } catch (e) {
-      this.errors.push(e.message);
-    }
+    this.errors = [];
+    await this.fetchDiary();
   },
 
   methods: {
     formatAsRelative(timestring) {
       return moment(timestring).fromNow();
+    },
+
+    async fetchDiary() {
+      try {
+        this.entries = await post('/diary', { token: getUserToken() });
+      } catch (e) {
+        this.errors.push(e.message);
+      }
     },
 
     async handleDelete(id) {
@@ -88,6 +93,7 @@ export default {
 
       try {
         await post('/diary/delete', { token: getUserToken(), id });
+        await this.fetchDiary();
       } catch (e) {
         this.errors.push(e.message);
         return;
@@ -103,6 +109,7 @@ export default {
 
       try {
         await post('/diary/permission', { token: getUserToken(), id, public: isPublic });
+        await this.fetchDiary();
       } catch (e) {
         this.errors.push(e.message);
         return;
