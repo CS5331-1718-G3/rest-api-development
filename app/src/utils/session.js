@@ -5,7 +5,7 @@ const COOKIE_NAMES = {
 };
 
 const COOKIE_EXPIRY_DAYS = 21;
-const COOKIE_DOMAIN = 'localhost';
+const COOKIE_DOMAIN = document.domain;
 
 export const getUserToken = () => {
   const cookie = Vue.cookie.get(COOKIE_NAMES.token);
