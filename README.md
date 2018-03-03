@@ -50,13 +50,31 @@ Additionally, to prevent authorization vulnerabilities, we added additional veri
 
 Since we are using MongoDB, the traditional SQL injection vulnerabilities are no longer applicable. However, a lesser-known class of injection vulnerabilities do apply to NoSQL databases such as MongoDB, if the input
 
-In order to prevent such injection attacks, we perform input sanitization at the API level, which performs some type-checking and/or restricts input to a particular subset of characters/allowed strings.
+In order to prevent such injection attacks, we perform input sanitization at the API level, which performs type-checking and type-casting using the JavaScript [joi](https://github.com/hapijs/joi) library.
 
-Additionally, since strings are not evaluated, arbitrary objects or JavaScript will not be evaluated from strings.
+Additionally, since strings are not evaluated, arbitrary objects or JavaScript will not be evaluated, which could possibly allow for more complex queries in MongoDB such as:
+
+```json
+{ "token": "{\"$nin\": [\"A\"]}" }
+```
+
+#### Cross-site scripting
+
+To prevent XSS, using a UI library such as Vue.js is helpful, since all UI elements are rendered on the client-side through JavaScript. Though it might be more inefficient, this new paradigm of developing frontend applications also helps to prevent XSS for the most part. Any strings that are to be rendered within the HTML are always escaped using the relevant HTML entities.
+
+By ensuring a single source of truth of data from the API server, this prevents potential double-unescaping bugs which may result in HTML elements being rendered on the browser.
 
 ### Question 3: Are there any improvements you would make to the API specification to improve the security of the web application?
 
-Answer: Please replace this sentence with your answer.
+#### Authorization checks
+
+As previously mentioned, we believe that the policy for CRUD actions on users' diary entries should be explcitly specified. We had inferred that a user should not be able to modify other users' entries, which was not actually specified in the API specification.
+
+#### Password complexity
+
+There should be some explicit limits for the password length. For example, passwords should be of a considerable length in order to significantly lower the chances of brute-force attacks. Since the search space exhibits polynomial growth with respect to the length of the password, by enforcing all passwords to be at least 8 characters (for example) would prevent brute-force attacks on passwords that are length 7 or lower, whose hashes can be cracked within a reasonable amount of time on a modern computer (if the salt is known).
+
+Additionally, password complexity should also be enforced (e.g. a combination of lower/uppercase characters, numbers and symbols) would also significantly improve the search space to lower the chances of a successful brute-force attacks.
 
 ### Question 4: Are there any additional features you would like to highlight?
 
@@ -78,9 +96,9 @@ Firstly our web application is using HTTP and not HTTPS, meaning any passive sni
 
 Our application is also susceptible to session hijacking/user impersonation as our token is sent in cleartext, and Eve and Mallory can easily impersonate any user that is concurrently using the web application.
 
-#### Password cracking
+#### Cross-Site Request Forgery
 
-Since we do not have a password complexity requirement, users' passwords may be highly susceptible to brute-force attacks.
+_TODO_
 
 ### Feedback: Is there any other feedback you would like to give?
 
