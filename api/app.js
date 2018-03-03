@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const routes = require('./routes');
 const resultWrapper = require('./middlewares/result_wrapper');
 
-//Set up mongoose
+// Set up Mongoose.
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://mongo/App');
 

@@ -19,4 +19,3 @@ TEAMID=`echo $MD5 | cut -d' ' -f 1`
 
 # Recreate all containers with Docker Compose.
 docker-compose --project-name $TEAMID up --force-recreate
-

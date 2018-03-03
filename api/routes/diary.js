@@ -8,40 +8,38 @@ const User = require('../database/user_model');
 const Diary = require('../database/diary_model');
 
 // GET /diary - Retrieve all public diary entries
-router.get('/', function (req, res, next) {
-  Diary.find({ public: true }, function (err, diaries) {
-    if (err) return console.error(err);
-    res.status(200).json({ status: true, result: diaries });
-  })
+router.get('/', async function(req, res, next) {
+  // Return all public diary entries most recent first.
+  const diaries = await Diary.find({ public: true }, { _id: 0, __v: 0 }).sort({
+    publish_date: -1,
+  });
+
+  res.status(200).json(diaries);
 });
 
 // POST /diary - Retrieve all entries belonging to an authenticated user
-router.post('/', [check('token').exists()], function (req, res, next) {
+router.post('/', [check('token').exists()], async function(req, res, next) {
   const { token } = req.body;
 
   // Validate the token and retrieve the private diary entries.
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(200).json({
-      status: false,
-      error: 'Invalid authentication token.',
-    });
+    return next(new Error('Invalid authentication token.'));
   }
 
-  User.findOne({ token: req.body.token }, function (err, user) {
-    if (user) {
-      Diary.find({ author: user.username }, function (err, diaries) {
-        if (err) return console.error(err);
-        res.status(200).json({ status: true, result: diaries });
-      })
-    } else {
-      return res.status(200).json({
-        status: false,
-        error: 'Invalid authentication token.',
-      });
-    }
-  });
+  // Find a user who has a matching token.
+  const user = await User.findOne({ token });
+  if (!user) {
+    return next(new Error('Invalid authentication token.'));
+  }
+
+  // Return the user's diaries.
+  const diaries = await Diary.find(
+    { author: user.username },
+    { _id: 0, __v: 0 }
+  );
+  res.status(200).json(diaries);
 });
 
 // POST /diary/create - Create a new diary entry
@@ -53,49 +51,41 @@ router.post(
     check('text').exists(),
     check('public').isBoolean(),
   ],
-  function (req, res, next) {
+  async function(req, res, next) {
     // `public` is reserved word in strict mode. Access using `isPublic` instead.
     const { token, title, text, public: isPublic } = req.body;
 
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      throw new Error('Validation failed.');
+      return next(new Error('Validation failed.'));
     }
 
     // Validate the token.
-    User.findOne({ token: req.body.token }, function (err, user) {
-      if (user) {
-        // Add a new diary entry to the database afterwards.
-        //const id = 2
+    const user = await User.findOne({ token: token });
+    if (!user) {
+      return next(new Error('Invalid authentication token.'));
+    }
 
-        //Should do better code for auto incr.
-        Diary.count(function(err, id) {
-          var diary = new Diary({
-            'id': id + 1, //count starts from 0
-            title: req.body.title,
-            author: user.username,
-            publish_date: Date.now(),
-            public: req.body.public,
-            text: req.body.text
-          });
-  
-          diary.save(function (err) {
-            if (err) { console.log(err.stack); return; }
-            res.status(201).json({
-              status: true,
-              result: id
-            });
-          });
-        });
-      } else {
-        return res.status(200).json({
-          status: false,
-          error: 'Invalid authentication token.',
-        });
-      }
+    // Get the auto increment.
+    // TODO: This is not correct, what if you delete then add again?
+    const count = await Diary.count();
+
+    // Save new diary entry.
+    const diary = new Diary({
+      id: count + 1,
+      title,
+      author: user.username,
+      publish_date: new Date(),
+      public: isPublic,
+      text,
     });
-  });
+
+    await diary.save();
+
+    res.status(201).json({ id: count + 1 });
+  }
+);
 
 // POST /diary/delete - Delete an existing diary entry
 router.post(
@@ -106,46 +96,31 @@ router.post(
       .isInt()
       .toInt(),
   ],
-  function (req, res, next) {
+  async function(req, res, next) {
     const { token, id } = req.body;
 
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      throw new Error('Validation failed.');
+      return next(new Error('Validation failed.'));
     }
 
-    //!!!need change permission
-
     // Validate the token.
-    User.findOne({ token: req.body.token }, function (err, user) {
-      if (user) {
-        Diary.deleteOne({ id: req.body.id }, function (err) {
-          if (err) return console.error(err);
-          return res.status(200).json({
-            status: true
-          });
-        });
-      } else {
-        return res.status(200).json({
-          status: false,
-          error: 'Invalid authentication token.',
-        });
-      }
-    });
+    const user = await User.findOne({ token });
+    if (!user) {
+      return next(new Error('Invalid authentication token.'));
+    }
 
-    // Validate that the diary entry exists and the user has permissions to delete the entry.
-    // After that purge the entry from the database.
-    // TODO: Replace this stub method.
+    // Verify if the diary entry belongs to the user.
+    const diary = await Diary.findOne({ id });
+    if (diary.author !== user.username) {
+      return next(new Error('You are not allowed to perform this action.'));
+    }
 
-    // if (id !== 2) {
-    //   return res.status(200).json({
-    //     status: false,
-    //     error: 'You are not allowed to perform this action.',
-    //   });
-    // }
+    // Delete the diary entry.
+    await Diary.deleteOne({ id });
 
-    // res.status(200).json({ status: true });
+    res.status(200).json();
   }
 );
 
@@ -159,51 +134,32 @@ router.post(
       .toInt(),
     check('public').isBoolean(),
   ],
-  function (req, res, next) {
+  async function(req, res, next) {
     const { token, id, public: isPublic } = req.body;
 
     // Validate the form values.
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      throw new Error('Validation failed.');
+      return next(new Error('Validation failed.'));
     }
 
     // Validate token.
-    User.findOne({ token: req.body.token }, function (err, user) {
-      if (user) {
-        //Todo extra validation
-        Diary.findOne({ id: req.body.id }, function (err, diary) {
-          if (err) { console.error(err); return; }
+    const user = await User.findOne({ token });
+    if (!user) {
+      return next(new Error('Invalid authentication token.'));
+    }
 
-          if (diary) {
-            diary.public = req.body.public
-            diary.save()
+    // Verify that the user has permissions to modify the entry.
+    const diary = await Diary.findOne({ id });
+    if (diary.author !== user.username) {
+      return next(new Error('You are not allowed to perform this action.'));
+    }
 
-            return res.status(200).json({
-              status: true
-            });
-          }
-        });
-      } else {
-        return res.status(200).json({
-          status: false,
-          error: 'Invalid authentication token.',
-        });
-      }
-    });
+    // Update the diary entry's permissions.
+    diary.public = isPublic;
+    diary.save();
 
-    //TODO
-    // Validate that the diary entry exists and the user has permissions to delete the entry.
-    // After that modify the permissions of the diary entry.
-    // TODO: Replace this stub method.
-    // if (id !== 2) {
-    //   return res.status(200).json({
-    //     status: false,
-    //     error: 'You are not allowed to perform this action.',
-    //   });
-    // }
-
-    // res.status(200).json({ status: true });
+    res.status(200).json();
   }
 );
 
