@@ -22,19 +22,20 @@ CS5331 Assignment 1 Project
 
 #### Frontend
 
-*   [_Vue.js_](https://vuejs.org): JavaScript view library for fast prototyping and performance
-*   [_SCSS_](https://sass-lang.com/): CSS preprocessor
-*   [_Webpack_](https://webpack.js.org/): Module bundler and development server for hot module reloading
-*   [_Babel_](https://babeljs.io/): JavaScript transpiler
+* [_Vue.js_](https://vuejs.org): JavaScript view library for fast prototyping and performance
+* [_SCSS_](https://sass-lang.com/): CSS preprocessor
+* [_Webpack_](https://webpack.js.org/): Module bundler and development web server
+  * `webpack-dev-server` allows proxying specific routes to a different address, which is used for proxying the API server
+* [_Babel_](https://babeljs.io/): JavaScript transpiler
 
 #### REST API
 
-*   [_Express_](https://expressjs.com/): Web framework popular for REST APIs in Node.js
-*   [_MongoDB_](https://www.mongodb.com/): Document store-based database server
+* [_Express_](https://expressjs.com/): Web framework popular for REST APIs in Node.js
+* [_MongoDB_](https://www.mongodb.com/): Document store-based database server
 
 #### Development and deployment
 
-*   [_Docker_](https://www.docker.com/): Containerization platform for reproducible and quick builds
+* [_Docker_](https://www.docker.com/): Containerization platform for reproducible and quick builds
 
 ### Question 2: Are there any security considerations your team thought about?
 
@@ -118,28 +119,25 @@ _TODO_
 
 The REST API specification has a few oddities that are quite different from the standard REST API conventions:
 
-*   Error status codes should not be `2xx`, but the more traditional `4xx` or `5xx` codes
-*   Success status codes are arbitrarily assigned `200` or `201`
-*   Not all endpoints return the results in a `result` field (_Update: This has since been rectified._)
-*   Sending authentication token in `POST` body rather than either cookies or `Authorization` header
-*   Unable to specify the HTTP method in the endpoint to list all endpoints (`GET /`), resulting in duplicates between `GET` and `POST` endpoints at the same URL
+* Error status codes should not be `2xx`, but the more idiomatic `4xx` or `5xx` codes
+* Not all endpoints return the results in a `result` field (_Update: This has since been rectified._)
+* Sending authentication token in `POST` body rather than either cookies or `Authorization` header
+* Unable to specify the HTTP method in the endpoint to list all endpoints (`GET /`), resulting in duplicates between `GET` and `POST` endpoints at the same URL
 
-Also, I would have liked to see Docker Compose being allowed in this assignment, since Docker containers are meant to be of a singular, atomic purpose. This allows each of the containers to start in parallel, especially if there are several long build steps within the container.
-
-Finally, the marks weightage for the UI is rather low at 5%, compared to the REST API at 70%, when it takes up quite a fair amount of time regardless of the frontend stack being used.
+Also, the marks weightage for the UI is rather low at 5%, compared to the REST API at 70%, when it takes up quite a fair amount of time regardless of the frontend stack being used.
 
 ## Declaration
 
 ### Please declare your individual contributions to the assignment:
 
 1.  Au-yong Xiang Rong Alwinson
-    *   Testing and documentation
+    * Testing and documentation
 2.  Irvin Lim Wei Quan
-    *   Set up Docker Compose
-    *   Wrote the frontend app
-    *   Set up the basic structure and endpoints for the REST API
+    * Set up Docker Compose
+    * Wrote the frontend app
+    * Set up the basic structure and endpoints for the REST API
 3.  Tan Ngee Joel Jonas
-    *   Testing and documentation
+    * Testing and documentation
 4.  Teng Yong Hao
-    *   Set up the database connections to MongoDB
-    *   Actual REST API functionality for all endpoints
+    * Set up the database connections to MongoDB
+    * Actual REST API functionality for all endpoints
