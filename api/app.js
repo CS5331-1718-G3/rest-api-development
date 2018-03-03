@@ -6,9 +6,10 @@ const bodyParser = require('body-parser');
 const resultWrapper = require('./middlewares/result_wrapper');
 
 // Set up database connections.
+const {host, database} = require('./config')
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
-mongoose.connect('mongodb://mongo/App');
+mongoose.connect(`mongodb://${host}/${database}`);
 autoIncrement.initialize(mongoose.connection);
 
 const app = express();
