@@ -10,9 +10,28 @@ const Diary = require('../database/diary_model');
 // GET /diary - Retrieve all public diary entries
 router.get('/', async function(req, res, next) {
   // Return all public diary entries most recent first.
-  const diaries = await Diary.find({ public: true }, { _id: 0 }).sort({
-    publish_date: -1,
-  });
+  const diaries = await Diary.aggregate([
+    { $match: { public: true } },
+    { $sort: { publish_date: -1 } },
+    {
+      $project: {
+        _id: 0,
+        id: 1,
+        title: 1,
+        author: 1,
+        public: 1,
+        text: 1,
+        publish_date: {
+          // Transform the date format.
+          $dateToString: {
+            format: '%Y-%m-%dT%H:%M:%S%z',
+            date: '$publish_date',
+            timezone: 'Asia/Singapore',
+          },
+        },
+      },
+    },
+  ]);
 
   res.status(200).json(diaries);
 });
@@ -35,7 +54,29 @@ router.post(
     }
 
     // Return the user's diaries.
-    const diaries = await Diary.find({ author: user.username }, { _id: 0 });
+    const diaries = await Diary.aggregate([
+      { $match: { author: user.username } },
+      { $sort: { publish_date: -1 } },
+      {
+        $project: {
+          _id: 0,
+          id: 1,
+          title: 1,
+          author: 1,
+          public: 1,
+          text: 1,
+          publish_date: {
+            // Transform the date format.
+            $dateToString: {
+              format: '%Y-%m-%dT%H:%M:%S%z',
+              date: '$publish_date',
+              timezone: 'Asia/Singapore',
+            },
+          },
+        },
+      },
+    ]);
+
     res.status(200).json(diaries);
   }
 );
@@ -82,7 +123,9 @@ router.post(
   celebrate({
     body: {
       token: Joi.string().required(),
-      id: Joi.number().integer().required(),
+      id: Joi.number()
+        .integer()
+        .required(),
     },
   }),
   async function(req, res, next) {
@@ -117,7 +160,9 @@ router.post(
   celebrate({
     body: {
       token: Joi.string().required(),
-      id: Joi.number().integer().required(),
+      id: Joi.number()
+        .integer()
+        .required(),
       public: Joi.bool().required(),
     },
   }),
