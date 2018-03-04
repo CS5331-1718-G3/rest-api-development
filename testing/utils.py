@@ -17,3 +17,10 @@ def validate_uuid4_token(response):
     # valid uuid4. This is bad for validation purposes.
 
     return val.hex == uuid_string
+
+def isDiaryIdInDiaryCollection(diaries, id):
+    # for diary in diaries:
+    #     if diary.id == extra_kwargs.id:
+    #         return True
+    
+    return False

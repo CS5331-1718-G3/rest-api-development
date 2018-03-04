@@ -1,0 +1,126 @@
+# users_test.yaml
+
+test_name: Check /dairy endpoint
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Fetching a valid token for testing
+    request:
+      url: "{api_uri:s}/users/authenticate"
+      method: POST
+      json: 
+        username: "{username:s}" 
+        password: "{password:s}" 
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true
+        result.token: null # null means match any but token must exists
+      save:
+        body: 
+            test_valid_token: result.token # save token for future testing
+
+  - name: Creating a dairy using an invalid token
+    request:
+      url: "{api_uri:s}/diary/create"
+      method: POST
+      json: 
+        token: 6bf00d02-dffc-4849-1111-111111111111
+        title: No One Can See This Post
+        public: false
+        text: It is very secret!
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Invalid authentication token.
+
+  # - name: Creating a dairy with empty fields
+  #   request:
+  #     url: "{api_uri:s}/diary/create"
+  #     method: POST
+  #     json: {}
+  #   response:
+  #     headers:
+  #       content-type: "{appjson-content-type:s}"
+  #     status_code: 200
+  #     body:
+  #       status: false
+  #       error: Validation failed.
+
+  # - name: Creating a dairy using an token only
+  #   request:
+  #     url: "{api_uri:s}/diary/create"
+  #     method: POST
+  #     json: 
+  #       token: "{test_valid_token}"
+  #   response:
+  #     headers:
+  #       content-type: "{appjson-content-type:s}"
+  #     status_code: 200
+  #     body:
+  #       status: false
+  #       error: Validation failed.
+
+  - name: Creating a public dairy using valid token and fields
+    request:
+      url: "{api_uri:s}/diary/create"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+        title: No One Can See This Post
+        public: true
+        text: It is very secret!
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 201
+      body:
+        status: true
+        result.id: null # null means match any and id must exists
+      save:
+        body: 
+            test_public_id: result.id # save id for future testing
+
+  - name: Creating a private dairy using valid token and fields
+    request:
+      url: "{api_uri:s}/diary/create"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+        title: No One Can See This Post
+        public: false
+        text: It is very secret!
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 201
+      body:
+        status: true
+        result.id: null # null means match any and id must exists
+      save:
+        body: 
+            test_private_id: result.id # save id for future testing           
+
+  - name: Get all public diary
+    request:
+      url: "{api_uri:s}/diary"
+      method: GET
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true         
+        # $ext:
+          # function: /home/yong24s/rest-api-development/testing/utils.pyc:isDiaryIdInDiaryCollection
+          # extra_kwargs:
+          #     id: "{test_public_id}"
+      
+        
