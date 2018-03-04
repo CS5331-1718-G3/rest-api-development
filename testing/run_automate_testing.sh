@@ -9,9 +9,13 @@ else
     USER=`echo $RANDOM | md5sum | awk '{ print $1 }'`
     PASS=`echo $USER | md5sum | awk '{ print $1 }'`
 
-    #Randomise username and password in our test variable file
+    # Randomise username and password in our test variable file
     sed -i '/  username: /c\  username: '$USER'' includes.yaml
     sed -i '/  password: /c\  password: '$PASS'' includes.yaml
+
+    # Setup user-defined python modules
+    LOC=pwd
+    export PYTHONPATH=${PYTHONPATH}:${LOC}
 
     echo 'TESTING USERS ENDPOINT\n'
     tavern-ci --stdout users_test.yaml

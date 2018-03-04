@@ -9,7 +9,7 @@ description: Test information for server
 variables:
   appjson-content-type: application/json; charset=utf-8 #Temporary add a charset=utf-8 to continue testing
   api_uri: http://localhost:8080
-  username: f2b55d88cfd06c7897969b95bd44e535
-  password: 9ae85670aececc871dfd75570a868bc7
+  username: 79298743ea2e32854a2d00a0df6f9ff6
+  password: 765fbff1741451257f3ad902ae948f5b
   fullname: Joey Pardella 
   age: 15

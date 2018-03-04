@@ -1,5 +1,11 @@
 # utils.py
+from __future__ import print_function
+import sys
+
 from uuid import UUID
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def validate_uuid4_token(response):
     uuid_string = response.json()["token"]["name"]
@@ -18,9 +24,24 @@ def validate_uuid4_token(response):
 
     return val.hex == uuid_string
 
-def isDiaryIdInDiaryCollection(diaries, id):
-    # for diary in diaries:
-    #     if diary.id == extra_kwargs.id:
-    #         return True
+def isDiaryIdInDiaryCollection(response, id):
+    # eprint("\n\n\n\n\n\n\n\n\n[MY DEBUG INTERNAL] " + )
+
+    diaries = response.json()['result']
+
+    for diary in diaries:
+        if diary['id'] == id:
+            return True
     
     return False
+
+#Dont think you can inverse the output for tavern. So for now we use this function
+def isDiaryIdNotInDiaryCollection(response, id):   
+    diaries = response.json()['result']
+
+    for diary in diaries:
+        if diary['id'] == id:
+            return False
+    
+    return True
+    

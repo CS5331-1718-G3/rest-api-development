@@ -108,7 +108,7 @@ stages:
         body: 
             test_private_id: result.id # save id for future testing           
 
-  - name: Get all public diary
+  - name: Get all public diary where public diary id must be in it
     request:
       url: "{api_uri:s}/diary"
       method: GET
@@ -118,9 +118,22 @@ stages:
       status_code: 200
       body:
         status: true         
-        # $ext:
-          # function: /home/yong24s/rest-api-development/testing/utils.pyc:isDiaryIdInDiaryCollection
-          # extra_kwargs:
-          #     id: "{test_public_id}"
+        $ext:
+          function: utils:isDiaryIdInDiaryCollection
+          extra_kwargs:
+              id: "{test_public_id}"
       
-        
+  # - name: Get all public diary where priviate diary id must not be in it
+  #   request:
+  #     url: "{api_uri:s}/diary"
+  #     method: GET
+  #   response:
+  #     headers:
+  #       content-type: "{appjson-content-type:s}"
+  #     status_code: 200
+  #     body:
+  #       status: true         
+  #       $ext:
+  #         function: utils:isDiaryIdNotInDiaryCollection
+  #         extra_kwargs:
+  #             id: "{test_private_id}"     
