@@ -1,0 +1,10 @@
+# includes.yaml
+---
+
+# Each file should have a name and description
+# name: Common test information
+# description: Login information for test server
+
+# Variables should just be a mapping of key: value pairs
+variables:
+  api_uri: http://localhost:8080
