@@ -17,9 +17,11 @@ else
     LOC=pwd
     export PYTHONPATH=${PYTHONPATH}:${LOC}
 
-    echo 'TESTING USERS ENDPOINT\n'
+    echo -e '\n\nTESTING USERS ENDPOINT\n'
     tavern-ci --stdout users_test.yaml
 
-    echo 'TESTING DIARY ENDPOINT\n'
+    echo -e '\n\nTESTING DIARY ENDPOINT\n'
     tavern-ci --stdout diary_test.yaml
+
+    echo -e '\n\nTESTING COMPLETED\n'    
 fi

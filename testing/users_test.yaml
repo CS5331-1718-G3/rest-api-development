@@ -130,7 +130,7 @@ stages:
         status: true
         result.username: "{username:s}" 
         result.fullname: "{fullname:s}" 
-        result.age: 15 #"{age:d}" BUGGY?
+        result.age: 15 #"{age:d}" #BUG with library?
 
   - name: Retrieve user information using an invalid token
     request:

@@ -41,32 +41,32 @@ stages:
         status: false
         error: Invalid authentication token.
 
-  # - name: Creating a dairy with empty fields
-  #   request:
-  #     url: "{api_uri:s}/diary/create"
-  #     method: POST
-  #     json: {}
-  #   response:
-  #     headers:
-  #       content-type: "{appjson-content-type:s}"
-  #     status_code: 200
-  #     body:
-  #       status: false
-  #       error: Validation failed.
+  - name: Creating a dairy with empty fields
+    request:
+      url: "{api_uri:s}/diary/create"
+      method: POST
+      json: {}
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Validation failed.
 
-  # - name: Creating a dairy using an token only
-  #   request:
-  #     url: "{api_uri:s}/diary/create"
-  #     method: POST
-  #     json: 
-  #       token: "{test_valid_token}"
-  #   response:
-  #     headers:
-  #       content-type: "{appjson-content-type:s}"
-  #     status_code: 200
-  #     body:
-  #       status: false
-  #       error: Validation failed.
+  - name: Creating a dairy using an token only
+    request:
+      url: "{api_uri:s}/diary/create"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Validation failed.
 
   - name: Creating a public dairy using valid token and fields
     request:
@@ -170,26 +170,28 @@ stages:
         status: false
         error: Invalid authentication token.
 
-  # - name: Get all diary with missing fields
-  #   request:
-  #     url: "{api_uri:s}/diary/"
-  #     method: POST
-  #     json: 
-  #       token: ''
-  #   response:
-  #     headers:
-  #       content-type: "{appjson-content-type:s}"
-  #     status_code: 200
-  #     body:
-  #       status: false
-  #       error: Validation failed.
-
-  - name: Change permission with an invalid token
+  - name: Get all diary with missing fields
     request:
       url: "{api_uri:s}/diary/"
       method: POST
       json: 
+        token: ''
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Validation failed.
+
+  - name: Change permission with an invalid token
+    request:
+      url: "{api_uri:s}/diary/permission"
+      method: POST
+      json: 
         token: "11111111111"
+        id: 1
+        public: true
     response:
       headers:
         content-type: "{appjson-content-type:s}"
@@ -198,25 +200,25 @@ stages:
         status: false
         error: Invalid authentication token.
         
-  # - name: Change permission of an non-existent diary with a valid token
-  #   request:
-  #     url: "{api_uri:s}/diary/"
-  #     method: POST
-  #     json: 
-  #       token: "{test_valid_token}"
-  #       id: 1111111111111
-  #       public: true
-  #   response:
-  #     headers:
-  #       content-type: "{appjson-content-type:s}"
-  #     status_code: 200
-  #     body:
-  #       status: false
-  #       error: Invalid authentication token.
+  - name: Change permission of an non-existent/other user diary with a valid token
+    request:
+      url: "{api_uri:s}/diary/permission"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+        id: 1111111111111
+        public: true
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Invalid diary ID.
 
   - name: Change permission of an private diary to public with a valid token
     request:
-      url: "{api_uri:s}/diary/"
+      url: "{api_uri:s}/diary/permission"
       method: POST
       json: 
         token: "{test_valid_token}"
@@ -246,7 +248,7 @@ stages:
 
   - name: Change permission of an public diary to private with a valid token
     request:
-      url: "{api_uri:s}/diary/"
+      url: "{api_uri:s}/diary/permission"
       method: POST
       json: 
         token: "{test_valid_token}"
@@ -274,40 +276,54 @@ stages:
           extra_kwargs:
             id: "{test_public_id}"     
 
-  # - name: Delete an non-existent diary with a valid token
-  #   request:
-  #     url: "{api_uri:s}/diary/"
-  #     method: POST
-  #     json: 
-  #       token: "{test_valid_token}"
-  #       id: 1111111111111
-  #       public: true
-  #   response:
-  #     headers:
-  #       content-type: "{appjson-content-type:s}"
-  #     status_code: 200
-  #     body:
-  #       status: false
-  #       error: Invalid authentication token.
+  - name: Delete an non-existent diary with a valid token
+    request:
+      url: "{api_uri:s}/diary/delete"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+        id: -1
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Invalid diary ID.
+  
+  - name: Delete other user diary with a valid token
+    request:
+      url: "{api_uri:s}/diary/delete"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+        id: 1
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: You are not allowed to perform this action.
 
-  # - name: Delete an diary with a invalid token
-  #   request:
-  #     url: "{api_uri:s}/diary/"
-  #     method: POST
-  #     json: 
-  #       token: "111111111111111111111111"
-  #       id: "{test_public_id}"
-  #   response:
-  #     headers:
-  #       content-type: "{appjson-content-type:s}"
-  #     status_code: 200
-  #     body:
-  #       status: false
-  #       error: Invalid authentication token.
+  - name: Delete an diary with a invalid token
+    request:
+      url: "{api_uri:s}/diary/delete"
+      method: POST
+      json: 
+        token: "111111111111111111111111"
+        id: "{test_public_id}"
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Invalid authentication token.
 
   - name: Delete an private diary with a valid token
     request:
-      url: "{api_uri:s}/diary/"
+      url: "{api_uri:s}/diary/delete"
       method: POST
       json: 
         token: "{test_valid_token}"
@@ -321,7 +337,7 @@ stages:
 
   - name: Delete an public diary with a valid token
     request:
-      url: "{api_uri:s}/diary/"
+      url: "{api_uri:s}/diary/delete"
       method: POST
       json: 
         token: "{test_valid_token}" 
