@@ -1,0 +1,147 @@
+# users_test.yaml
+
+test_name: Check /users endpoint
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Creating a user with insufficent information
+    request:
+      url: "{api_uri:s}/users/register"
+      method: POST
+      json: 
+        fullname: Joey Pardella 
+        age: 15    
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Validation failed.
+
+  - name: Creating a new random user with a random password
+    request:
+      url: "{api_uri:s}/users/register"
+      method: POST
+      json: 
+        username: "{username:s}" 
+        password: "{password:s}" 
+        fullname: Joey Pardella 
+        age: 15    
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 201
+      body:
+        status: true
+
+  - name: Creating an existing user
+    request:
+      url: "{api_uri:s}/users/register"
+      method: POST
+      json: 
+        username: "{username:s}" 
+        password: "{password:s}" 
+        fullname: "{fullname:s}" 
+        age: "{age:d}"    
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: User already exists!
+
+  - name: Authenticate an user with insufficent information
+    request:
+      url: "{api_uri:s}/users/authenticate"
+      method: POST
+      json: 
+        username: "{username:s}" 
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Validation failed.
+
+  - name: Authenticate an existing user with invalid credentials
+    request:
+      url: "{api_uri:s}/users/authenticate"
+      method: POST
+      json: 
+        username: "{username:s}" 
+        password: 111111111111111111a
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+
+  - name: Authenticate an existing user with valid credentials
+    request:
+      url: "{api_uri:s}/users/authenticate"
+      method: POST
+      json: 
+        username: "{username:s}" 
+        password: "{password:s}" 
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true
+        result.token: null # null means match any but token must exists
+      save:
+        body: 
+            test_valid_token: result.token # save token for future testing
+
+
+    
+  - name: Authenticate an invalid user
+    request:
+      url: "{api_uri:s}/users/authenticate"
+      method: POST
+      json: 
+        username: 111111111111111111a
+        password: 111111111111111111a
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+
+  - name: Retrieve user information using a valid token
+    request:
+      url: "{api_uri:s}/users"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true
+        result.username: "{username:s}" 
+        result.fullname: "{fullname:s}" 
+        result.age: 15 #"{age:d}" #BUG with library?
+
+  - name: Retrieve user information using an invalid token
+    request:
+      url: "{api_uri:s}/users"
+      method: POST
+      json: 
+        token: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: "Invalid authentication token."
