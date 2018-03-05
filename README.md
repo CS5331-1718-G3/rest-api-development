@@ -93,11 +93,11 @@ To prevent the possibility of session ID prediction, in which an attacker can su
 
 #### Authorization checks
 
-As previously mentioned, we believe that the policy for CRUD actions on users' diary entries should be explcitly specified. We had inferred that a user should not be able to modify other users' entries, which was not actually specified in the API specification.
+As previously mentioned, we believe that the policy for CRUD actions on users' diary entries should be explicitly specified. We had inferred that a user should not be able to modify other user's entries, which was not actually specified in the API specification.
 
 #### Password complexity
 
-There should be some explicit limits for the password length. For example, passwords should be of a considerable length in order to significantly lower the chances of brute-force attacks. Since the search space exhibits polynomial growth with respect to the length of the password, by enforcing all passwords to be at least 8 characters (for example) would prevent brute-force attacks on passwords that are length 7 or lower, whose hashes can be cracked within a reasonable amount of time on a modern computer (if the salt is known).
+There should be some explicit limits for the password length. For example, passwords should be of a considerable length in order to significantly lower the chances of successful brute-force attacks. Since the search space exhibits polynomial growth with respect to the length of the password, by enforcing all passwords to be at least 8 characters (for example) would prevent brute-force attacks on passwords that are too short and would be compromised within a reasonable amount of time on a modern computer.
 
 Additionally, password complexity should also be enforced (e.g. a combination of lower/uppercase characters, numbers and symbols) would also significantly improve the search space to lower the chances of a successful brute-force attacks.
 
