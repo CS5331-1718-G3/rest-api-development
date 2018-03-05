@@ -7,7 +7,7 @@ const resultWrapper = require('./middlewares/result_wrapper');
 const { isCelebrate } = require('celebrate');
 
 // Set up database connections.
-const {host, database} = require('./config')
+const { host, database } = require('./config');
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
 mongoose.connect(`mongodb://${host}/${database}`);
@@ -35,16 +35,16 @@ app.use(function(req, res, next) {
 
 // Error handler
 app.use(function(err, req, res, next) {
+  // Handle validation errors.
+  if (isCelebrate(err)) {
+    err.message = 'Validation failed.';
+  }
+
+  // Create custom JSON error.
   const body = { status: false, error: err.message };
 
   // Defaults to 200 OK.
   res.status(err.status || 200);
-
-  // Handle validation errors.
-  if (isCelebrate(err)) {
-    return res.json('Validation failed.');
-  }
-
   res.json(body);
 });
 
