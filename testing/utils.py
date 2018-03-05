@@ -44,4 +44,18 @@ def isDiaryIdNotInDiaryCollection(response, id):
             return False
     
     return True
-    
+
+def checkDiaryIdsIsInResult(response, size, ids):   
+    diaries = response.json()['result']
+
+    if len(diaries) != size:
+        return False
+
+    counter = 0
+
+    for diary in diaries:
+        for id in ids:
+            if diary['id'] == id:
+                counter += 1
+
+    return counter == size

@@ -6,6 +6,21 @@ includes:
   - !include includes.yaml
 
 stages:
+  - name: Creating a user with insufficent information
+    request:
+      url: "{api_uri:s}/users/register"
+      method: POST
+      json: 
+        fullname: Joey Pardella 
+        age: 15    
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Validation failed.
+
   - name: Creating a new random user with a random password
     request:
       url: "{api_uri:s}/users/register"
@@ -39,6 +54,34 @@ stages:
         status: false
         error: User already exists!
 
+  - name: Authenticate an user with insufficent information
+    request:
+      url: "{api_uri:s}/users/authenticate"
+      method: POST
+      json: 
+        username: "{username:s}" 
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Validation failed.
+
+  - name: Authenticate an existing user with invalid credentials
+    request:
+      url: "{api_uri:s}/users/authenticate"
+      method: POST
+      json: 
+        username: "{username:s}" 
+        password: 111111111111111111a
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+
   - name: Authenticate an existing user with valid credentials
     request:
       url: "{api_uri:s}/users/authenticate"
@@ -57,19 +100,7 @@ stages:
         body: 
             test_valid_token: result.token # save token for future testing
 
-  - name: Authenticate an existing user with invalid credentials
-    request:
-      url: "{api_uri:s}/users/authenticate"
-      method: POST
-      json: 
-        username: "{username:s}" 
-        password: 111111111111111111a
-    response:
-      headers:
-        content-type: "{appjson-content-type:s}"
-      status_code: 200
-      body:
-        status: false
+
     
   - name: Authenticate an invalid user
     request:

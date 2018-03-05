@@ -106,7 +106,7 @@ stages:
         result.id: null # null means match any and id must exists
       save:
         body: 
-            test_private_id: result.id # save id for future testing           
+          test_private_id: result.id # save id for future testing           
 
   - name: Get all public diary where public diary id must be in it
     request:
@@ -121,19 +121,214 @@ stages:
         $ext:
           function: utils:isDiaryIdInDiaryCollection
           extra_kwargs:
-              id: "{test_public_id}"
+            id: "{test_public_id}"
       
-  # - name: Get all public diary where priviate diary id must not be in it
+  - name: Get all public diary where private diary id must not be in it
+    request:
+      url: "{api_uri:s}/diary"
+      method: GET
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true         
+        $ext:
+          function: utils:isDiaryIdNotInDiaryCollection
+          extra_kwargs:
+            id: "{test_private_id}"     
+
+  - name: Get all diary belonging to a valid user token
+    request:
+      url: "{api_uri:s}/diary/"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true
+        $ext: #Check size = 2 and both id are in the result
+          function: utils:checkDiaryIdsIsInResult
+          extra_kwargs:
+            size: 2
+            ids: ["{test_public_id}", "{test_private_id}"] 
+
+  - name: Get all diary with invalid token
+    request:
+      url: "{api_uri:s}/diary/"
+      method: POST
+      json: 
+        token: "11111111111"
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Invalid authentication token.
+
+  # - name: Get all diary with missing fields
   #   request:
-  #     url: "{api_uri:s}/diary"
-  #     method: GET
+  #     url: "{api_uri:s}/diary/"
+  #     method: POST
+  #     json: 
+  #       token: ''
   #   response:
   #     headers:
   #       content-type: "{appjson-content-type:s}"
   #     status_code: 200
   #     body:
-  #       status: true         
-  #       $ext:
-  #         function: utils:isDiaryIdNotInDiaryCollection
-  #         extra_kwargs:
-  #             id: "{test_private_id}"     
+  #       status: false
+  #       error: Validation failed.
+
+  - name: Change permission with an invalid token
+    request:
+      url: "{api_uri:s}/diary/"
+      method: POST
+      json: 
+        token: "11111111111"
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: false
+        error: Invalid authentication token.
+        
+  # - name: Change permission of an non-existent diary with a valid token
+  #   request:
+  #     url: "{api_uri:s}/diary/"
+  #     method: POST
+  #     json: 
+  #       token: "{test_valid_token}"
+  #       id: 1111111111111
+  #       public: true
+  #   response:
+  #     headers:
+  #       content-type: "{appjson-content-type:s}"
+  #     status_code: 200
+  #     body:
+  #       status: false
+  #       error: Invalid authentication token.
+
+  - name: Change permission of an private diary to public with a valid token
+    request:
+      url: "{api_uri:s}/diary/"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+        id: "{test_private_id}"
+        public: true
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true
+
+  - name: Check previously changed diary id "{test_private_id}" is now publicly accessible
+    request:
+      url: "{api_uri:s}/diary"
+      method: GET
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true         
+        $ext:
+          function: utils:isDiaryIdInDiaryCollection
+          extra_kwargs:
+            id: "{test_private_id}"
+
+  - name: Change permission of an public diary to private with a valid token
+    request:
+      url: "{api_uri:s}/diary/"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+        id: "{test_public_id}"
+        public: false
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true
+
+  - name: Check previously changed diary id "{test_public_id}" is now not publicly accessible
+    request:
+      url: "{api_uri:s}/diary"
+      method: GET
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true         
+        $ext:
+          function: utils:isDiaryIdNotInDiaryCollection
+          extra_kwargs:
+            id: "{test_public_id}"     
+
+  # - name: Delete an non-existent diary with a valid token
+  #   request:
+  #     url: "{api_uri:s}/diary/"
+  #     method: POST
+  #     json: 
+  #       token: "{test_valid_token}"
+  #       id: 1111111111111
+  #       public: true
+  #   response:
+  #     headers:
+  #       content-type: "{appjson-content-type:s}"
+  #     status_code: 200
+  #     body:
+  #       status: false
+  #       error: Invalid authentication token.
+
+  # - name: Delete an diary with a invalid token
+  #   request:
+  #     url: "{api_uri:s}/diary/"
+  #     method: POST
+  #     json: 
+  #       token: "111111111111111111111111"
+  #       id: "{test_public_id}"
+  #   response:
+  #     headers:
+  #       content-type: "{appjson-content-type:s}"
+  #     status_code: 200
+  #     body:
+  #       status: false
+  #       error: Invalid authentication token.
+
+  - name: Delete an private diary with a valid token
+    request:
+      url: "{api_uri:s}/diary/"
+      method: POST
+      json: 
+        token: "{test_valid_token}"
+        id: "{test_public_id}" # this id was previously set to private
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true
+
+  - name: Delete an public diary with a valid token
+    request:
+      url: "{api_uri:s}/diary/"
+      method: POST
+      json: 
+        token: "{test_valid_token}" 
+        id: "{test_private_id}" # this id was previously set to public
+    response:
+      headers:
+        content-type: "{appjson-content-type:s}"
+      status_code: 200
+      body:
+        status: true
