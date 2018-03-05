@@ -49,9 +49,17 @@ Additionally, to prevent authorization vulnerabilities, we added additional veri
 
 #### Injection vulnerabilities
 
-Since we are using MongoDB, the traditional SQL injection vulnerabilities are no longer applicable. However, a lesser-known class of injection vulnerabilities do apply to NoSQL databases such as MongoDB, if the input
+Since we are using MongoDB, the traditional SQL injection vulnerabilities are no longer applicable. However, a lesser-known class of injection vulnerabilities do apply to NoSQL databases such as MongoDB, known as NoSQL injections. This can occur if we pass a JSON object instead of a string, which can result in overwriting the `$where` condition, much like how SQL injections work.
 
-In order to prevent such injection attacks, we perform input sanitization at the API level, which performs type-checking and type-casting using the JavaScript [joi](https://github.com/hapijs/joi) library.
+In order to prevent such injection attacks, we perform input sanitization at the API level, which performs type-checking and type-casting using the JavaScript [joi](https://github.com/hapijs/joi) library. Hence, passing this will not work, since `token` is expected to be a string:
+
+```json
+{
+  "token": {
+    "$nin": ["A"]
+  }
+}
+```
 
 Additionally, since strings are not evaluated, arbitrary objects or JavaScript will not be evaluated, which could possibly allow for more complex queries in MongoDB such as:
 
