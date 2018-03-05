@@ -154,3 +154,5 @@ Also, the marks weightage for the UI is rather low at 5%, compared to the REST A
 4.  Teng Yong Hao
     * Set up the database connections to MongoDB
     * Actual REST API functionality for all endpoints
+    * Set up automate testing scripts
+   
